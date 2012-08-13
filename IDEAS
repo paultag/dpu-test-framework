@@ -69,6 +69,10 @@ Debian Package Utility test framework and also open ideas.
    - Is the "runner output" part of it?
      (On a related note, see "Paralization support" above)
    - Semantic exit codes (beyond 0 for success, non-zero for failure)?
+ * Version space checking
+   - Be able to run a template over all dh compat levels (or rather, for a
+     given range) to aid in testing a check works for all "supported" dh
+     versions.
 
 Legend:
  * [L] - Lintian's test suite has this feature (or something closely related).
