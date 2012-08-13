@@ -1,0 +1,13 @@
+Source: dpu-test-framework
+Section: devel
+Priority: optional
+Maintainer: Niels Thykier <niels@thykier.net>
+Uploaders: Paul Tagliamonte <tag@pault.ag>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.3
+
+Package: dpu-test-framework
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}
+Description: Debian package utility tester
