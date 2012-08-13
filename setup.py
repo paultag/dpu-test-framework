@@ -5,7 +5,7 @@
 from dpu import __appname__, __version__
 from setuptools import setup
 
-long_description = open('README.md').read()
+long_description = open('README').read()
 
 setup(
     name=__appname__,
