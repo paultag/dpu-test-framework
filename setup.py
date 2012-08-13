@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# Copyright (c) Sunlight Labs, 2012 under the terms and conditions
-# of the LICENSE file.
 
 from dpu import __appname__, __version__
 from setuptools import setup
