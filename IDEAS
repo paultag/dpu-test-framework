@@ -13,8 +13,14 @@ Debian Package Utility test framework and also open ideas.
    (example ideas)
    - pkg X (does not) contains file Y and Y has perm Z
    - pkg X has control field Y and its value is Z
-   - pkg X has control script Y and its content is/matches/contains Z
+   - pkg X has control script/file Y and its content is/matches/contains Z
+   - How to handle "unlisted files" or "pkg X contains Y + Z and nothing else".
+     Related: Handle "non-empty" dirs in a "sane" way by default.
+     (e.g. "pkg X contains usr/share/doc/X/copyright" should assume that X also
+      contains "usr/", "usr/share/", "usr/share/doc/" and usr/share/doc/X/"
+      even if they are not explicitly listed)
  * Support for TODO and SKIP [L]
+   - How to deal with "build-time" TODO failures?
  * Support for running tool X and storing/comparing its (filtered)
    output at/to Y
    - filter ideas: sort [L], sed/grep/awk or maybe allow "any pipeline"?
@@ -32,14 +38,54 @@ Debian Package Utility test framework and also open ideas.
  * Selection of test to run
    - Allow a single test to be run
    - Allow any test based on a filter (e.g. by name, by some "marker" etc.)
+ * Modify ENV and set umask [L] examples include:
+   - set LC_ALL to C (or C.UTF-8)
+   - search paths via PERL5LIB or PYTHONPATH
+   - Set application specific variable such as LINTIAN_ROOT
+   - PATH to access tools built in the package
+   - umask turned out to be a fairly annoying issue in Ubuntu its default to 0002
+     instead of 0022.
+ * Run-ordering
+   - "sequence" and then "testname"? [L]
+ * Helpers/support for auto-generating various files for testing purposes?
+   - scripts
+   - manpages (especially these are a pain to write)
+   - Makefile snippets and sources for
+     - ELF binaries
+     - SOs (should come with a symbols file, link-against etc.)
+   The auto-generated files does not need to be useful; merely pass off as a simple
+   seemly useful script/manpage/....  Must pass the "file(1)" test and checking
+   tools should consider them valid (e.g. sh -n $script, readelf $elf) and not
+   come with errors.
+ * Build log dumping when a build fails.
+   - Useful when the test fails on a buildd (and not on your own machine)
+ * Architecture specific tests [L]
+   - Some tests cannot be done on certain architectures.
+ * Support for tracking "coverage" [L]
+   - Well-defined for Lintian were coverage is related to "lintian tags".
+   - Maybe as a "project plugin"?
  * Test compatability
    - How is compatability defined?
    - Is the "runner output" part of it?
      (On a related note, see "Paralization support" above)
+   - Semantic exit codes (beyond 0 for success, non-zero for failure)?
 
 Legend:
  * [L] - Lintian's test suite has this feature (or something closely related).
 
+
+Known caveats
+=============
+
+The items here are some known caveats that should be kept in mind:
+
+ * Versions can include epochs
+   - Has to be stripped out sometimes (e.g. when building a non-native
+     upstream tarball)
+ * umask is not (always) 0022.  Tests should not assume that the "checkout"
+   permissions is unaffected by umask.  (i.e. if file X should have perm Y,
+   the test should ensure that a tool sets those permissions to Y explicitly).
+   - Document this for test writers.
 
 Templates
 =========
