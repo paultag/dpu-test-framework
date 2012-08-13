@@ -25,9 +25,17 @@ Debian Package Utility test framework and also open ideas.
    - Some tools (e.g. Lintian) processes the end result.  Test suites for
      these will probably need to run this tool in all tests, so it might
      make sense to add a "Suite default for option X" setting.
- * Support "project" specific "plugins.
+ * Support "project" specific "plugins" on a "suite" or "test" level.
+ * Parallization support
+   - Lintian's has over 340 tests; running them in serial takes ages...
+     (read: over 30 minutes).
+ * Selection of test to run
+   - Allow a single test to be run
+   - Allow any test based on a filter (e.g. by name, by some "marker" etc.)
  * Test compatability
    - How is compatability defined?
+   - Is the "runner output" part of it?
+     (On a related note, see "Paralization support" above)
 
 Legend:
  * [L] - Lintian's test suite has this feature (or something closely related).
