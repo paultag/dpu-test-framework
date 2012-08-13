@@ -1,0 +1,105 @@
+This document contains various ideas for features/design for the
+Debian Package Utility test framework and also open ideas.
+
+ * Template support [L]
+   (see "Templates" section below)
+ * Hooks [L]
+   (Lintian hooks listed below)
+   - pre_upstream (for non-native pkg only)
+   - pre_build
+   - post_test
+   - test_calibration
+ * Declarative description of package contents
+   (example ideas)
+   - pkg X (does not) contains file Y and Y has perm Z
+   - pkg X has control field Y and its value is Z
+   - pkg X has control script Y and its content is/matches/contains Z
+ * Support for TODO and SKIP [L]
+ * Support for running tool X and storing/comparing its (filtered)
+   output at/to Y
+   - filter ideas: sort [L], sed/grep/awk or maybe allow "any pipeline"?
+ * Support for "per test command line options" [L]
+   (example: Lintian's test suite uses this to pass --pedantic or
+    --profile options to Lintian)
+ * Support "test suite" defaults
+   - Some tools (e.g. Lintian) processes the end result.  Test suites for
+     these will probably need to run this tool in all tests, so it might
+     make sense to add a "Suite default for option X" setting.
+ * Support "project" specific "plugins.
+ * Test compatability
+   - How is compatability defined?
+
+Legend:
+ * [L] - Lintian's test suite has this feature (or something closely related).
+
+
+Templates
+=========
+
+The Lintian test suite has two related template features.  The first
+is "Template processing of files" and second is "Base package
+template".
+
+Template processing of files
+----------------------------
+
+The Lintian test suite allow certain files to be defined as either a
+template or a "real file".  If the "real file" is present, the
+template is ignored (if present).  Otherwise the "real file" will be
+created from the template.
+
+The template has access to a number of values defined in the "test
+description" file.  The following partial list is "reverse engineered"
+from Lintian's t/runtests:
+
+ * testname - Name of the test (required)
+ * srcpkg - Name of the source package (defaults to testname)
+ * version - Version of the generated "package" (required).
+ * architecture - The (default) architecture of packages built
+   (defaults to "all")
+ * description - The synopsis of the package
+ * distribution - The distribution (defaults to "unstable")
+ * standsards-version - The standards-version in use
+ * date - "now" in $(date -R) format
+ * section - The default section (defaults to "devel")
+ * TESTSET - path to the test.
+
+Implementation detail of Lintian: "<file>.in" is the template for
+"<file>".  Templates are generally limited to the control and the
+changelog file.
+
+Base package template
+---------------------
+
+The basic idea behind "base package template" is the test writer
+should not have to write a file he/she does not need for the test.
+
+In Lintian this works by the following setup algorithm:
+
+  * Create empty dirs called the "rundir"
+  * rsync "template dir" containing a basic default fileset on top of "rundir"
+  * rsync "test source dir" on top of "rundir".
+  * Apply "Template processing of files" (as defined above)
+
+The last step is part of the secret of why this part is useful.
+
+Results
+-------
+
+The two features above added together has the following properties:
+
+ * A given test can override the template dir by creating a file with the
+   same name as the one in the template dir.  This works similar to
+   "shadowing" (or explicitly defining) a variable.
+ * Files not explicitly written appear to be "automatically" created.
+ * When the defaults and the template processing is not good enough,
+   the test writer can copy the file from the "template-dir" and simply
+   add/change/remove the needed bits.
+
+
+The following extra features would be nice to have:
+
+ * A Build-Depends(-Indep) subst variable for the "control.in"
+   obtained from the template dir.  This could reduce the amount
+   of work required when (e.g.) bumping the debhelper compat in
+   the "template dir".
