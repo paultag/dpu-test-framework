@@ -1,7 +1,6 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
 
 from contextlib import contextmanager
-import subprocess
 import os.path
 import shutil
 import os
@@ -17,6 +16,7 @@ def cd(path):
     finally:
         os.chdir(old_dir)
 
+
 @contextmanager
 def disposabledir(path):
     mkdir(path)
@@ -24,6 +24,7 @@ def disposabledir(path):
         yield
     finally:
         rmdir(path)
+
 
 @contextmanager
 def workin(path):

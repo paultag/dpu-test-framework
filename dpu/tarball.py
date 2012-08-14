@@ -6,7 +6,8 @@ import subprocess
 from contextlib import contextmanager
 
 
-def make_orig_tarball(rundir, upname, upversion, compression="gzip", outputdir=None):
+def make_orig_tarball(rundir, upname, upversion, compression="gzip",
+                      outputdir=None):
     """Create an orig tarball in the rundir
 
     This function will create a tarball suitable for being used as an
@@ -31,7 +32,10 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip", outputdir=N
     unpackpath = os.path.join(rundir, unpackdir)
     if outputdir is None:
         outputdir = rundir
-    orig_tarball = os.path.join(outputdir, "%s_%s.orig.tar" % (upname, upversion))
+    orig_tarball = os.path.join(outputdir, "%s_%s.orig.tar" % (
+        upname,
+        upversion
+    ))
     with _open_writeable_tarfile(orig_tarball, compression) as tarobj:
         tarobj.add(unpackpath, arcname=unpackdir)
 
@@ -54,9 +58,10 @@ def open_compressed_tarball(tarball, compression):
     else:
         infd = open(tarball, "r")
         decomp = subprocess.Popen([compression, '-d'], shell=False, stdin=infd,
-                                  stdout=subprocess.PIPE, universal_newlines=False)
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=False)
         tobj = tarfile.open(name=tarball, mode="r|", fileobj=decomp.stdout)
-        infd.close() # We don't need to keep this handle open
+        infd.close()  # We don't need to keep this handle open
         yield tobj
         _close_pipeline(tobj, decomp.stdout, decomp, compression)
 
@@ -93,11 +98,10 @@ def _open_writeable_tarfile(tarbase, compression):
     out = open(tarball, "w")
     compp = subprocess.Popen([compression], shell=False, stdin=subprocess.PIPE,
                              stdout=out, universal_newlines=False)
-    out.close() # We don't need to keep this handle open
+    out.close()  # We don't need to keep this handle open
     tobj = tarfile.open(name=tarball, mode=m, fileobj=compp.stdin)
     yield tobj
     _close_pipeline(tobj, compp.stdin, compp, compression)
-
 
 
 def _close_pipeline(tobj, procfd, proc, compression):
