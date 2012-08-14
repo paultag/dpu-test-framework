@@ -6,7 +6,7 @@ from tests.tarball_helper import make_and_check_tarball
 
 test_src = "test"
 test_ver = "1.0"
-rundir = "../../resources/"
+rundir = "./tests/resources/"
 expected = "%s-%s/foo" % (test_src, test_ver)
 
 def visit_tarball(tar):

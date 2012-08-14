@@ -6,7 +6,7 @@ import subprocess
 from contextlib import contextmanager
 
 
-def make_orig_tarball(rundir, upname, upversion, compression="gzip"):
+def make_orig_tarball(rundir, upname, upversion, compression="gzip", outputdir=None):
     """Create an orig tarball in the rundir
 
     This function will create a tarball suitable for being used as an
@@ -14,8 +14,9 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip"):
     tarball will be the directory called "%(upname)s-%(upversion)",
     which must exists in rundir.
 
-    The tarball will be created in rundir and will be named according
-    to dpkg-source's expectation.
+    The tarball will be created in outputdir and will be named
+    according to dpkg-source's expectation.  If outputdir is not
+    specified, it defaults to rundir.
 
     The optional "compression" parameter can be used to choose the
     compression of the tarball.  Supported values are "gzip", "bzip2",
@@ -28,7 +29,9 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip"):
     """
     unpackdir = "%s-%s" % (upname, upversion)
     unpackpath = os.path.join(rundir, unpackdir)
-    orig_tarball = "%s_%s.orig.tar" % (upname, upversion)
+    if outputdir is None:
+        outputdir = rundir
+    orig_tarball = os.path.join(outputdir, "%s_%s.orig.tar" % (upname, upversion))
     with _open_writeable_tarfile(orig_tarball, compression) as tarobj:
         tarobj.add(unpackpath, arcname=unpackdir)
 
