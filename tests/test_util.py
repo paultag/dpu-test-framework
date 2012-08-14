@@ -19,6 +19,7 @@ def test_basic_walk():
             touch(target)
 
         for entry in dir_walk("./"):
+            assert entry in targets
             targets.remove(entry)
 
     assert targets == []
@@ -47,7 +48,10 @@ def test_basic_walk():
             touch(target)
 
         for entry in dir_walk("./", xtn='target'):
-            valid_targets.remove(entry)
+            if entry in valid_targets:
+                valid_targets.remove(entry)
+            if entry in invalid_targets:
+                invalid_targets.remove(entry)
 
     assert valid_targets == []
     assert invalid_targets == invalid_cmp
