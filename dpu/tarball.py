@@ -1,10 +1,8 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
-"""
-Prototype/sample helpers for the setup phase of a test
-"""
 
 import os
 import tarfile
+import subprocess
 from contextlib import contextmanager
 
 
