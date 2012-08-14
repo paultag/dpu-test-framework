@@ -19,3 +19,5 @@ def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None,
     _run_rsync(skeldir, targetdir, exclude_skel)
     if os.path.isdir(tsrcdir):
         _run_rsync(tsrcdir, targetdir, exclude_test_src)
+
+

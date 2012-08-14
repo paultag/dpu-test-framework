@@ -27,11 +27,10 @@ def disposabledir(path):
 
 
 @contextmanager
-def workin(path):
+def tmpdir(path):
     with disposabledir(path):
         with cd(path):
             yield
-
 
 def mkdir(folder, destroy_old=False):
     try:
@@ -41,6 +40,16 @@ def mkdir(folder, destroy_old=False):
             rmdir(folder)
             return mkdir(folder, destroy_old=False)
         raise
+
+
+def dir_walk(path, xtn=None):
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            fullpath = os.path.join(root, f)
+            if xtn is not None:
+                if fullpath[-len(xtn):] != xtn:
+                    continue
+            yield fullpath
 
 
 def cp(source, dest):
@@ -69,3 +78,7 @@ def rmdir(path):
 
 def abspath(folder):
     return os.path.abspath(folder)
+
+
+def touch(fpath):
+    open(fpath, 'a').close()

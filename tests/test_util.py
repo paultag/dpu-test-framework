@@ -1,0 +1,53 @@
+import os
+from dpu.util import touch, dir_walk, mkdir, tmpdir
+
+
+def test_basic_walk():
+    with tmpdir("./tests/staging/test-basic-walk"):
+        mkdir("foo")
+        mkdir("bar")
+        mkdir("baz")
+
+        targets = [
+            "./foo/bar.target",
+            "./foo/bar",
+            "./bar/foo.target",
+            "./baz/foo"
+        ]
+
+        for target in targets:
+            touch(target)
+
+        for entry in dir_walk("./"):
+            targets.remove(entry)
+
+    assert targets == []
+
+
+def test_basic_walk():
+    with tmpdir("./tests/staging/test-advanced-walk"):
+        mkdir("foo")
+        mkdir("bar")
+        mkdir("baz")
+
+        valid_targets = [
+            "./foo/bar.target",
+            "./bar/foo.target",
+            "./kruft.target"
+        ]
+
+        invalid_targets = [
+            "./foo/bar",
+            "./baz/foo",
+            "./kruft"
+        ]
+        invalid_cmp = list(invalid_targets)
+
+        for target in valid_targets + invalid_targets:
+            touch(target)
+
+        for entry in dir_walk("./", xtn='target'):
+            valid_targets.remove(entry)
+
+    assert valid_targets == []
+    assert invalid_targets == invalid_cmp
