@@ -25,3 +25,7 @@ def test_gzip():
 
 def test_bzip2():
     _compress("bzip2", "bz2")
+
+
+# XXX: Implment LZMA / XZ
+#      - PRT
