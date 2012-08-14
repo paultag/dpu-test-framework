@@ -16,13 +16,19 @@ def cd(path):
     finally:
         os.chdir(old_dir)
 
+@contextmanager
+def disposabledir(path):
+    mkdir(path)
+    try:
+        yield
+    finally:
+        rmdir(path)
 
 @contextmanager
 def workin(path):
-    mkdir(path)
-    with cd(path):
-        yield
-    rmdir(path)
+    with disposabledir(path):
+        with cd(path):
+            yield
 
 
 def mkdir(folder, destroy_old=False):
