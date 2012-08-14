@@ -65,6 +65,7 @@ def _open_tarfile(tarbase, compression):
     out = open(tarball, "w")
     compp = subprocess.Popen([compression], shell=False, stdin=subprocess.PIPE,
                              stdout=out, universal_newlines=False)
+    out.close() # We don't need to keep this handle open
     tobj = tarfile.open(name=tarball, mode=m, fileobj=compp.stdin)
     yield tobj
     try:
