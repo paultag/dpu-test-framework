@@ -2,7 +2,7 @@
 
 from functools import partial
 
-from tests.tarball_helper import make_and_check_tarball
+from .tarball_helper import make_and_check_tarball
 
 test_src = "test"
 test_ver = "1.0"
