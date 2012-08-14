@@ -1,11 +1,20 @@
-# Prototype/sample helpers for the setup phase of a test
+# Copyright (c) GNU GPL-2+, dpu-test-framework authors.
+"""
+Prototype/sample helpers for the setup phase of a test
+"""
 
 import os
 import subprocess
 import tarfile
+from contextlib import contextmanager
 
-def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None, exclude_test_src=None):
-    """Prototype helper to setup a basic test dir from a skeleton and a test source"""
+
+def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None,
+                      exclude_test_src=None):
+    """
+    Prototype helper to setup a basic test dir from a skeleton and a
+    test source
+    """
     def _run_rsync(source, target, excludes):
         cmd = ['rsync', '-rpc', source + "/", target + "/"]
         if excludes:
@@ -40,11 +49,11 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip"):
     unpackdir = "%s-%s" % (upname, upversion)
     unpackpath = os.path.join(rundir, unpackdir)
     orig_tarball = "%s_%s.orig.tar" % (upname, upversion)
-    (tarobj, closefn) = _open_tarfile(orig_tarball, compression)
-    tarobj.add(unpackpath, arcname=unpackdir)
-    closefn()
+    with _open_tarfile(orig_tarball, compression) as tarobj:
+        tarobj.add(unpackpath, arcname=unpackdir)
 
 
+@contextmanager
 def _open_tarfile(tarbase, compression):
     """Opens an open TarFile for the given compression
 
@@ -54,6 +63,7 @@ def _open_tarfile(tarbase, compression):
     close the TarFile and (if needed) clean up the compression
     pipeline.
     """
+
     if compression == 'gzip' or compression == 'bzip2':
         ext = "gz"
         if compression == 'bzip2':
@@ -61,9 +71,13 @@ def _open_tarfile(tarbase, compression):
         m = "w:%s" % ext
         tarball = "%s.%s" % (tarbase, ext)
         tobj = tarfile.open(name=tarball, mode=m)
-        return (tobj, tobj.close)
+        yield tobj
+        tobj.close()
+        return
+
     if compression != "xz" and compression != "lzma":
         raise ValueError("Unknown compression %s" % compression)
+
     m = "w|"
     # assume compression == ext == command - holds for xz and lzma :>
     # also assume the compressor takes no arguments and writes to stdout
@@ -72,22 +86,21 @@ def _open_tarfile(tarbase, compression):
     compp = subprocess.Popen([compression], shell=False, stdin=subprocess.PIPE,
                              stdout=out, universal_newlines=False)
     tobj = tarfile.open(name=tarball, mode=m, fileobj=compp.stdin)
-    def close_proc():
-        try:
-            tobj.close()
-            compp.stdin.close()
-            compp.wait()
-            if compp.returncode != 0:
-                raise IOError("%s exited with %s" % (compression, compp.returncode))
-        except:
+    yield tobj
+    try:
+        tobj.close()
+        compp.stdin.close()
+        compp.wait()
+        if compp.returncode != 0:
+            raise IOError("%s exited with %s" % (compression, compp.returncode))
+    except:
+        if compp.returncode is None:
+            # something broke trouble and the process has not been reaped; kill
+            # it (nicely at first)
+            compp.terminate()
+            compp.poll()
             if compp.returncode is None:
-                # something broke trouble and the process has not been reaped; kill
-                # it (nicely at first)
-                compp.terminate()
-                compp.poll()
-                if compp.returncode is None:
-                    compp.kill()
-                    compp.wait()
-            # re-raise the exception
-            raise
-    return (tobj, close_proc)
+                compp.kill()
+                compp.wait()
+        # re-raise the exception
+        raise
