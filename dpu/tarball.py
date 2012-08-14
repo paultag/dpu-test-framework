@@ -29,19 +29,44 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip"):
     unpackdir = "%s-%s" % (upname, upversion)
     unpackpath = os.path.join(rundir, unpackdir)
     orig_tarball = "%s_%s.orig.tar" % (upname, upversion)
-    with _open_tarfile(orig_tarball, compression) as tarobj:
+    with _open_writeable_tarfile(orig_tarball, compression) as tarobj:
         tarobj.add(unpackpath, arcname=unpackdir)
 
 
 @contextmanager
-def _open_tarfile(tarbase, compression):
+def open_compressed_tarball(tarball, compression):
+    """Opens a compressed tarball in read-only mode as a TarFile
+
+    This context manager transparently handles compressions unsupported
+    by TarFile by using external processes.  The following compressions
+    are supported "gzip", "bzip2", "xz" and "lzma".
+
+    As the decompression may be done by an external process, seeking is
+    generally not supported.
+    """
+    if compression == "gzip" or compression == "bzip2":
+        tf = tarfile.open(tarball)
+        yield tf
+        tf.close()
+    else:
+        infd = open(tarball, "r")
+        decomp = subprocess.Popen([compression, '-d'], shell=False, stdin=infd,
+                                  stdout=subprocess.PIPE, universal_newlines=False)
+        tobj = tarfile.open(name=tarball, mode="r|", fileobj=decomp.stdout)
+        infd.close() # We don't need to keep this handle open
+        yield tobj
+        _close_pipeline(tobj, decomp.stdout, decomp, compression)
+
+
+@contextmanager
+def _open_writeable_tarfile(tarbase, compression):
     """Opens an open TarFile for the given compression
 
-    This function opens a TarFile and possibly setups a compression
-    pipeline.  It returns a tuple with two elements (tobj, closefn).
-    tobj is the TarFile instance and closefn is a callable that will
-    close the TarFile and (if needed) clean up the compression
-    pipeline.
+    This opens a writable TarFile and compresses it with the specified
+    compression.  The compression may be done by a pipeline and thus
+    the TarFile may not be seekable.
+
+    Supported compressions are "gzip", "bzip2", "xz" and "lzma".
     """
 
     if compression == 'gzip' or compression == 'bzip2':
@@ -68,20 +93,25 @@ def _open_tarfile(tarbase, compression):
     out.close() # We don't need to keep this handle open
     tobj = tarfile.open(name=tarball, mode=m, fileobj=compp.stdin)
     yield tobj
+    _close_pipeline(tobj, compp.stdin, compp, compression)
+
+
+
+def _close_pipeline(tobj, procfd, proc, compression):
     try:
         tobj.close()
-        compp.stdin.close()
-        compp.wait()
-        if compp.returncode != 0:
-            raise IOError("%s exited with %s" % (compression, compp.returncode))
+        procfd.close()
+        proc.wait()
+        if proc.returncode != 0:
+            raise IOError("%s exited with %s" % (compression, proc.returncode))
     except:
-        if compp.returncode is None:
+        if proc.returncode is None:
             # something broke trouble and the process has not been reaped; kill
             # it (nicely at first)
-            compp.terminate()
-            compp.poll()
-            if compp.returncode is None:
-                compp.kill()
-                compp.wait()
+            proc.terminate()
+            proc.poll()
+            if proc.returncode is None:
+                proc.kill()
+                proc.wait()
         # re-raise the exception
         raise
