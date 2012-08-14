@@ -5,7 +5,9 @@ import os.path
 import shutil
 import os
 import errno
+from itertools import starmap, chain
 
+flattern = chain.from_iterable
 
 @contextmanager
 def cd(path):
@@ -43,13 +45,12 @@ def mkdir(folder, destroy_old=False):
 
 
 def dir_walk(path, xtn=None):
-    for root, dirs, files in os.walk(path):
-        for f in files:
-            fullpath = os.path.join(root, f)
-            if xtn is not None:
-                if fullpath[-len(xtn):] != xtn:
-                    continue
-            yield fullpath
+    path_iter = lambda root, _, files: (os.path.join(root, f) for f in files)
+    walkiter = flattern(starmap(path_iter, os.walk(path)))
+
+    if xtn is not None:
+        return (x for x in walkiter if x.endswith(xtn))
+    return walkiter
 
 
 def cp(source, dest):
