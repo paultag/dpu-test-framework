@@ -41,7 +41,7 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip",
 
 
 @contextmanager
-def open_compressed_tarball(tarball, compression):
+def open_compressed_tarball(tarname, compression, fd=None):
     """Opens a compressed tarball in read-only mode as a TarFile
 
     This context manager transparently handles compressions unsupported
@@ -50,18 +50,39 @@ def open_compressed_tarball(tarball, compression):
 
     As the decompression may be done by an external process, seeking is
     generally not supported.
+
+    tarname is the name of the tarfile.  If fd is None, this is the
+    path to the tarball.  It is also passed to tarfile.open as the
+    name parameter.
+
+    compression is the compression type (see above for valid values)
+
+    The optional parameter fd must be a file-like object opened for
+    reading.  When given, the "content" of the tarball is read from fd
+    rather than the file denoted by tarname.  This is useful for cases
+    where the tarball is embedded inside another file (e.g. like the
+    control.tar.gz in a .deb file).
     """
     if compression == "gzip" or compression == "bzip2":
-        tf = tarfile.open(tarball)
+        if fd is None:
+            tf = tarfile.open(tarname)
+        else:
+            m = "r|gz"
+            if compression == "bzip2":
+                m = "r|bz2"
+            tf = tarfile.open(name=tarname, mode=m, fileobj=fd)
         yield tf
         tf.close()
     else:
-        infd = open(tarball, "r")
+        infd = fd
+        if infd is None:
+            infd = open(tarname, "r")
         decomp = subprocess.Popen([compression, '-d'], shell=False, stdin=infd,
                                   stdout=subprocess.PIPE,
                                   universal_newlines=False)
-        tobj = tarfile.open(name=tarball, mode="r|", fileobj=decomp.stdout)
-        infd.close()  # We don't need to keep this handle open
+        tobj = tarfile.open(name=tarname, mode="r|", fileobj=decomp.stdout)
+        if fd is None:
+            infd.close()  # We don't need to keep this handle open
         yield tobj
         _close_pipeline(tobj, decomp.stdout, decomp, compression)
 

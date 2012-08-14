@@ -10,7 +10,7 @@ the_path = "./tests/staging/"
 
 
 def make_and_check_tarball(testname, rundir, upname, upversion, compression,
-                           visitor):
+                           visitor, visit_open=True):
     """Create, check and clean up a tarball (test utility)
 
     Utility for setting up a dir, compile a tarball from a resource path,
@@ -38,5 +38,9 @@ def make_and_check_tarball(testname, rundir, upname, upversion, compression,
                           compression=compression, outputdir=testdir)
         tarname = "%s_%s.orig.tar.%s" % (upname, upversion, xtn)
         path = os.path.join(testdir, tarname)
-        with open_compressed_tarball(path, compression) as tar:
-            visitor(tar)
+        if visit_open:
+            with open_compressed_tarball(path, compression) as tar:
+                visitor(tar)
+        else:
+            visitor(path)
+

@@ -2,6 +2,9 @@
 
 from functools import partial
 
+from dpu.util import disposabledir
+from dpu.tarball import make_orig_tarball, open_compressed_tarball
+
 from .tarball_helper import make_and_check_tarball
 
 test_src = "test"
@@ -10,7 +13,7 @@ rundir = "./tests/resources/"
 expected = "%s-%s/foo" % (test_src, test_ver)
 
 
-def visit_tarball(tar):
+def visit_open_tarball(tar):
     # We have to iterate through the tarball to ensure no seeking is done
     # (not possible when we decompress with a pipeline)
     for tinfo in tar:
@@ -37,22 +40,45 @@ def visit_tarball(tar):
             print "Unexpected tarball member: %s" % tinfo.name
             assert False
 
+def visit_tarball_path(compression, tarpath):
+    with open(tarpath, "rb") as f:
+        with open_compressed_tarball(tarpath, compression, fd=f) as tar:
+            visit_open_tarball(tar)
+
+make_visitor = lambda comp: partial(visit_tarball_path, comp)
+
 
 mctar = partial(make_and_check_tarball, "test_tarball",
                 rundir, test_src, test_ver)
 
 
 def test_gzip():
-    mctar("gzip", visit_tarball)
+    mctar("gzip", visit_open_tarball)
 
 
 def test_bzip2():
-    mctar("bzip2", visit_tarball)
+    mctar("bzip2", visit_open_tarball)
 
 
 def test_xz():
-    mctar("xz", visit_tarball)
+    mctar("xz", visit_open_tarball)
 
 
 def test_lzma():
-    mctar("lzma", visit_tarball)
+    mctar("lzma", visit_open_tarball)
+
+
+def test_gzip_pipe():
+    mctar("gzip", make_visitor("gzip"), visit_open=False)
+
+
+def test_bzip2_pipe():
+    mctar("bzip2", make_visitor("bzip2"), visit_open=False)
+
+
+def test_xz_pipe():
+    mctar("xz", make_visitor("xz"), visit_open=False)
+
+
+def test_lzma_pipe():
+    mctar("lzma", make_visitor("lzma"), visit_open=False)
