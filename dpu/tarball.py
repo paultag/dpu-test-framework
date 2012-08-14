@@ -41,7 +41,7 @@ def make_orig_tarball(rundir, upname, upversion, compression="gzip",
 
 
 @contextmanager
-def open_compressed_tarball(tarname, compression, fd=None):
+def open_compressed_tarball(tarname, compression=None, fd=None):
     """Opens a compressed tarball in read-only mode as a TarFile
 
     This context manager transparently handles compressions unsupported
@@ -55,7 +55,9 @@ def open_compressed_tarball(tarname, compression, fd=None):
     path to the tarball.  It is also passed to tarfile.open as the
     name parameter.
 
-    compression is the compression type (see above for valid values)
+    compression is the compression type (see above for valid values).
+    This can be omitted when the filename extension matches one of
+    the supported compression methods.
 
     The optional parameter fd must be a file-like object opened for
     reading.  When given, the "content" of the tarball is read from fd
@@ -63,6 +65,9 @@ def open_compressed_tarball(tarname, compression, fd=None):
     where the tarball is embedded inside another file (e.g. like the
     control.tar.gz in a .deb file).
     """
+
+    if compression is None:
+        compression = _determine_compression(tarname)
     if compression == "gzip" or compression == "bzip2":
         if fd is None:
             tf = tarfile.open(tarname)
@@ -143,3 +148,16 @@ def _close_pipeline(tobj, procfd, proc, compression):
                 proc.wait()
         # re-raise the exception
         raise
+
+def _determine_compression(filename):
+    ext = os.path.splitext(filename)[1]
+    if not ext:
+        raise ValueError("Cannot guess compression for %s" % filename)
+    ext = ext[1:]
+    if ext == "gz":
+        return "gzip"
+    if ext == "bz2":
+        return "bzip2"
+    if ext == "xz" or ext == "lzma":
+        return ext
+    raise ValueError("Cannot guess compression for %s" % filename)

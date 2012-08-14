@@ -40,12 +40,12 @@ def visit_open_tarball(tar):
             print "Unexpected tarball member: %s" % tinfo.name
             assert False
 
-def visit_tarball_path(compression, tarpath):
+def visit_tarball_path(tarpath, compression=None):
     with open(tarpath, "rb") as f:
         with open_compressed_tarball(tarpath, compression, fd=f) as tar:
             visit_open_tarball(tar)
 
-make_visitor = lambda comp: partial(visit_tarball_path, comp)
+make_visitor = lambda comp: partial(visit_tarball_path, compression=comp)
 
 
 mctar = partial(make_and_check_tarball, "test_tarball",
@@ -82,3 +82,19 @@ def test_xz_pipe():
 
 def test_lzma_pipe():
     mctar("lzma", make_visitor("lzma"), visit_open=False)
+
+
+def test_gzip_pipe_guess():
+    mctar("gzip", visit_tarball_path, visit_open=False)
+
+
+def test_bzip2_pipe_guess():
+    mctar("bzip2", visit_tarball_path, visit_open=False)
+
+
+def test_xz_pipe_guess():
+    mctar("xz", visit_tarball_path, visit_open=False)
+
+
+def test_lzma_pipe_guess():
+    mctar("lzma", visit_tarball_path, visit_open=False)
