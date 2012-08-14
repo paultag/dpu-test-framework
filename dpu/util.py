@@ -5,6 +5,7 @@ import subprocess
 import os.path
 import shutil
 import os
+import errno
 
 
 @contextmanager
@@ -35,9 +36,10 @@ def mkdir(folder, destroy_old=False):
     try:
         os.makedirs(folder)
     except OSError as e:
-        if e.errno == 17:
+        if e.errno == errno.EEXIST and destroy_old:
             rmdir(folder)
             return mkdir(folder, destroy_old=False)
+        raise
 
 
 def cp(source, dest):
