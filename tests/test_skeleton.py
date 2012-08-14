@@ -6,7 +6,8 @@ from dpu.template import copy_template_dir
 
 targetdir = "./tests/staging/test-skeleton"
 upstream = "./tests/resources/skeletons/upstream"
-debian =  "./tests/resources/skeletons/debian"
+debian = "./tests/resources/skeletons/debian"
+
 
 def test_copy_template_dir():
     with disposabledir(targetdir):

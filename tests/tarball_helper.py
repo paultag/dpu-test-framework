@@ -1,21 +1,20 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
 
-from contextlib import contextmanager
-import tarfile
-import subprocess
 import os
 
 from dpu.tarball import make_orig_tarball, open_compressed_tarball
 from dpu.util import disposabledir
 
+
 the_path = "./tests/staging/"
 
 
-def make_and_check_tarball(testname, rundir, upname, upversion, compression, visitor):
+def make_and_check_tarball(testname, rundir, upname, upversion, compression,
+                           visitor):
     """Create, check and clean up a tarball (test utility)
 
-    Utility for setting up a dir, compile a tarball from a resource path, opening
-    the tarball and passing it to vistor.
+    Utility for setting up a dir, compile a tarball from a resource path,
+    opening the tarball and passing it to vistor.
 
     testname is used to create a unique name for the test.  The
     compression is also used for this purpose, so multiple tests can

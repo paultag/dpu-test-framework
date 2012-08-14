@@ -9,6 +9,7 @@ test_ver = "1.0"
 rundir = "./tests/resources/"
 expected = "%s-%s/foo" % (test_src, test_ver)
 
+
 def visit_tarball(tar):
     # We have to iterate through the tarball to ensure no seeking is done
     # (not possible when we decompress with a pipeline)
@@ -36,17 +37,22 @@ def visit_tarball(tar):
             print "Unexpected tarball member: %s" % tinfo.name
             assert False
 
-mctar=partial(make_and_check_tarball, "test_tarball", rundir, test_src, test_ver)
+
+mctar = partial(make_and_check_tarball, "test_tarball",
+                rundir, test_src, test_ver)
+
 
 def test_gzip():
     mctar("gzip", visit_tarball)
 
+
 def test_bzip2():
     mctar("bzip2", visit_tarball)
+
 
 def test_xz():
     mctar("xz", visit_tarball)
 
+
 def test_lzma():
     mctar("lzma", visit_tarball)
-
