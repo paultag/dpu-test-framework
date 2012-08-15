@@ -35,14 +35,15 @@ def render_templates(rundir, context):
         # print "I: Rendered: %s" % (template)
 
 
-def prepare_test(test, test_path, path):
+def prepare_test(root, test, test_path, path):
     obj = load_conf("%s/test.json" % (test_path))
     template = obj['template']
+    template_dir = os.path.join(root, "templates", template)
 
     def _get_date():
         return formatdate()
 
-    context = load_conf("%s/%s/context.json" % ("templates", template))
+    context = load_conf(os.path.join(template_dir, "context.json"))
     context.update(obj)
     context.update({
         "get_date": _get_date
@@ -52,19 +53,18 @@ def prepare_test(test, test_path, path):
         rmdir(path)
 
     mkdir(path)
-    copy_template_dir("%s/%s/template" % ("templates", template),
+    copy_template_dir(template_dir,
                       test,
                       path)
     render_templates(path, context)
 
 
-def run_test(name, path):
-    prepare_test(name, path, "%s/%s/%s" % ("staging", path, name))
+def run_test(root, name, path):
+    prepare_test(root, name, path, "%s/%s/%s" % ("staging", path, name))
 
 
 def run_tests(root):
-    with cd(root):
-        tests = os.listdir("tests")
-        for test in tests:
-            test_path = "%s/%s" % ("tests", test)
-            run_test(test, test_path)
+    testdir = os.path.join(root, "tests")
+    for test in os.listdir(testdir):
+        test_path = "%s/%s" % (testdir, test)
+        run_test(root, test, test_path)
