@@ -88,9 +88,9 @@ def run_class(suite_dir, workdir, context):
     subprocess.check_call([binary], env=env)
 
 
-def run_test(suite_dir, name, path):
+def run_test(suite_dir, name, path, workroot):
     print "I: Preparing %s" % (name)
-    workdir = "%s/%s/%s" % ("staging", path, name)
+    workdir = os.path.join(workroot, path, name)
     context = prepare_test(suite_dir, name, path, workdir)
     nwd = "%s-%s" % (workdir, context['version']['upstream'])
 
@@ -104,8 +104,8 @@ def run_test(suite_dir, name, path):
     run_class(suite_dir, workdir, context)
 
 
-def run_tests(suite_dir):
+def run_tests(suite_dir, workroot):
     testdir = os.path.join(suite_dir, "tests")
     for test in os.listdir(testdir):
         test_path = "%s/%s" % (testdir, test)
-        run_test(suite_dir, test, test_path)
+        run_test(suite_dir, test, test_path, workroot)
