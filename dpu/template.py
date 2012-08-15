@@ -54,7 +54,7 @@ def prepare_test(root, test, test_path, path):
 
     mkdir(path)
     copy_template_dir(template_dir,
-                      test,
+                      test_path,
                       path)
     render_templates(path, context)
 
