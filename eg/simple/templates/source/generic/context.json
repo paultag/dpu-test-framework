@@ -1,26 +1,6 @@
 {
-    "bin_pkgs": [
-        {
-            "architecture": "all",
-            "name": "dpu-dummy",
-            "synopsis": "Don't pay attention to me"
-        }
-    ],
-    "debhelper": {
-        "compat": "9",
-        "version": "(>= 9)"
-    },
-    "maintainer": "John Q. Hacker <jhacker@example.com>",
-    "priority": "optional",
-    "section": "devel",
     "source": {
         "format": "3.0",
         "variant": "quilt"
-    },
-    "src_pkg": "dpu-dummy",
-    "standards_version": "3.9.3",
-    "suite": "unstable",
-    "testname": null,
-    "urgency": "low",
-    "version": "1.0-1"
+    }
 }

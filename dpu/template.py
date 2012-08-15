@@ -43,7 +43,9 @@ def prepare_test(root, test, test_path, path):
     def _get_date():
         return formatdate()
 
-    context = load_conf(os.path.join(template_dir, "context.json"))
+    context = load_conf(os.path.join(".", "context.json"))
+    # OK, we've loaded the global context.
+    context.update(load_conf(os.path.join(template_dir, "context.json")))
     context.update(obj)
     context.update({
         "get_date": _get_date
@@ -60,6 +62,7 @@ def prepare_test(root, test, test_path, path):
 
 
 def run_test(root, name, path):
+    print "I: Preparing %s" % (name)
     prepare_test(root, name, path, "%s/%s/%s" % ("staging", path, name))
 
 
