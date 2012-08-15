@@ -55,8 +55,8 @@ def prepare_test(suite_dir, test, test_path, path):
         rmdir(path)
 
     mkdir(path)
-    copy_template_dir(template_dir,
-                      test_path,
+    copy_template_dir(os.path.join(template_dir, "template"),
+                      os.path.join(test_path, "overlay"),
                       path)
     render_templates(path, context)
     return context
