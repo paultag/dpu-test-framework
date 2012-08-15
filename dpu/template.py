@@ -35,15 +35,15 @@ def render_templates(rundir, context):
         rm(template)
 
 
-def prepare_test(root, test, test_path, path):
+def prepare_test(suite_dir, test, test_path, path):
     obj = load_conf("%s/test.json" % (test_path))
     template = obj['template']
-    template_dir = os.path.join(root, "templates", template)
+    template_dir = os.path.join(suite_dir, "templates", template)
 
     def _get_date():
         return formatdate()
 
-    context = load_conf(os.path.join(".", "context.json"))
+    context = load_conf(os.path.join(suite_dir, "context.json"))
     # OK, we've loaded the global context.
     context.update(load_conf(os.path.join(template_dir, "context.json")))
     context.update(obj)
@@ -62,7 +62,7 @@ def prepare_test(root, test, test_path, path):
     return context
 
 
-def run_class(workdir, context):
+def run_class(suite_dir, workdir, context):
 
     exports = {
         "testname": "DPU_TEST_NAME",
@@ -82,14 +82,15 @@ def run_class(workdir, context):
     env['DPU_SRC_VERSION'] = full_version
     env['DPU_UPSTREAM_VERSION'] = context['version']['upstream']
 
-    subprocess.check_call(["classes/%s" % (context['class'])],
-                          env=env)
+    binary = os.path.join(suite_dir, "classes", context['class'])
+
+    subprocess.check_call([binary], env=env)
 
 
-def run_test(root, name, path):
+def run_test(suite_dir, name, path):
     print "I: Preparing %s" % (name)
     workdir = "%s/%s/%s" % ("staging", path, name)
-    context = prepare_test(root, name, path, workdir)
+    context = prepare_test(suite_dir, name, path, workdir)
     nwd = "%s-%s" % (workdir, context['version']['upstream'])
 
     if os.path.exists(nwd):
@@ -97,11 +98,11 @@ def run_test(root, name, path):
 
     mv(workdir, nwd)
     workdir = nwd
-    run_class(workdir, context)
+    run_class(suite_dir, workdir, context)
 
 
-def run_tests(root):
-    testdir = os.path.join(root, "tests")
+def run_tests(suite_dir):
+    testdir = os.path.join(suite_dir, "tests")
     for test in os.listdir(testdir):
         test_path = "%s/%s" % (testdir, test)
-        run_test(root, test, test_path)
+        run_test(suite_dir, test, test_path)
