@@ -1,0 +1,91 @@
+# In the following example file, the entry argument (second or later
+# word on a line) refers to an entry in the tarball being checked.
+#
+# The used entry should generally not have a leading "./" nor "/".
+# When processing dirs, DPU will remove the trailing slash (if any) of
+# the dir name read from the tarball before matching.
+
+# Asserts that entry is in the tarball and it is a
+#  - file or a hardlink (to a file)
+#  - directory
+#  - symlink
+contains-file entry
+contains-dir entry
+contains-symlink entry
+
+# Asserts that entry exists, its type and permission is tperm, its
+# owning user is ouser and its owning group is ogroup.
+#
+# tperm is a type/permission string as used by "ls -l" and "tar -tv"
+# and consists of 10 characters.  Examples:
+#
+#   drwxr-xr-x (dir,  mode 0755)
+#   -rw-r----- (file, mode 0644)
+#
+# NB: hardlinks have "h" mapped to "-" in tperm (see hardlinks below)
+contains-entry tperm ouser/ogroup entry
+
+# Asserts that entry is not present in the tarball.
+not-present entry
+
+# In the below [entry] means that the entry argument is optional.
+# If omitted, the last explicitly given entry argument will be used.
+# Thus, the following two examples have the same semantics:
+#
+# example 1:
+#   contains-file usr/share/doc/foo/copyright
+#   perm 0644 root/root usr/share/doc/foo/copyright
+#   same-content TEST:copyright usr/share/doc/foo/copyright
+#
+#   contains-symlink usr/share/link
+#   link-target foo/bar usr/share/link
+#
+# example 2:
+#   contains-file usr/share/doc/foo/copyright
+#   perm 0644 root/root
+#   same-content TEST:copyright
+#
+#   contains-symlink usr/share/link
+#   link-target foo/bar
+# 
+
+# Asserts that entry is present, is a symlink and its target is
+# ltarget
+# - the target value is not resolved and must match exactly
+link-target ltarget [entry]
+
+# Asserts that entry is present, has permission operm (octal only),
+# its owning user is named ouser and its owning group is ogroup.
+perm operm [ouser:ogroup [entry]]
+
+# Assert that some/file and entry are both present, files (or
+# hardlinks to files) and have the same content.
+#
+# keyword can be one of:
+#  TESTDIR - some/file is a path relative from the test source dir
+#  WORKDIR - some/file is a path relative from the working dir
+#  PACKAGE - some/file is a path relative to the root of the tarball
+#
+# If keyword is omitted, it defaults to WORKDIR.  If keyword is
+# WORKDIR or TESTDIR, then some/file may be a symlink.
+#
+# NB: keyword can only be used with the first argument, entry is
+# always an entry in the tarball.  This is because the entry (if
+# given) might be "carried on".
+#
+same-content [keyword:]some/file [entry]
+
+
+# Check if file1 and file2 ... are the same file
+#
+# This check asserts that one of the listed files is a regular file
+# and the rest are hardlinks to that file.  The order is not
+# important.
+#
+# It is generally not possible to determine which one of them will be
+# the regular file as it can depend on the order in which tar
+# processed them.  Particular the order is very likely to differ
+# between "tmpfs" and "ext3".
+#
+hardlinks file1 file2 [...]
+
