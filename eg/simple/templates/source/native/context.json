@@ -18,7 +18,7 @@
         "variant": "native"
     },
     "src_pkg": "dpu-dummy",
-    "standards_version": "3.9.2",
+    "standards_version": "3.9.3",
     "suite": "unstable",
     "testname": null,
     "urgency": "low",
