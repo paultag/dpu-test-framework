@@ -24,5 +24,6 @@
     "urgency": "low",
     "version": {
         "upstream": "1.0"
-    }
+    },
+    "builder": "none"
 }

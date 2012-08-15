@@ -7,6 +7,7 @@ from jinja2 import Template
 from email.Utils import formatdate
 
 from dpu.util import dir_walk, rm, cd, load_conf, mkdir, rmdir, mv
+from dpu.builder import run_builder
 
 
 def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None,
@@ -98,6 +99,8 @@ def run_test(suite_dir, name, path):
 
     mv(workdir, nwd)
     workdir = nwd
+    if 'builder' in context:
+        run_builder(context['builder'], workdir)
     run_class(suite_dir, workdir, context)
 
 
