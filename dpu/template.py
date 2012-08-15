@@ -32,7 +32,6 @@ def render_templates(rundir, context):
             with open(template.rsplit(".", 1)[0], 'w') as obj:
                 obj.write(tobj.render(**context))
         rm(template)
-        # print "I: Rendered: %s" % (template)
 
 
 def prepare_test(root, test, test_path, path):
@@ -47,7 +46,7 @@ def prepare_test(root, test, test_path, path):
     # OK, we've loaded the global context.
     context.update(load_conf(os.path.join(template_dir, "context.json")))
     context.update(obj)
-    context.update({
+    context.update({  # XXX: Break this out into some global dpu thing.
         "get_date": _get_date
     })
 

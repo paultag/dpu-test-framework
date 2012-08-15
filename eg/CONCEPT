@@ -5,6 +5,13 @@
         to allow building of upstream source tarballs, etc)
    XXX: not implemented.
 
+global stuff
+============
+
+context.json is the base context file. As much as can be kept here should be.
+the other json files (in order: template, test) will override parts of this
+file.
+
 test
 ====
 
