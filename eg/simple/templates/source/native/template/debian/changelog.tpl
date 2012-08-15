@@ -5,4 +5,4 @@
 
   * Suppress "should close ITP bug" messages.  (Closes: #123456)
 
- -- {{maintainer}}  {{date}}
+ -- {{maintainer}}  {{get_date()}}

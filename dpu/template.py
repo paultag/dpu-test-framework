@@ -3,6 +3,7 @@
 import os
 import subprocess
 from jinja2 import Template
+from email.Utils import formatdate
 
 from dpu.util import dir_walk, rm, cd, load_conf, mkdir, rmdir
 
@@ -38,8 +39,14 @@ def prepare_test(test, test_path, path):
     obj = load_conf("%s/test.json" % (test_path))
     template = obj['template']
 
+    def _get_date():
+        return formatdate()
+
     context = load_conf("%s/%s/context.json" % ("templates", template))
     context.update(obj)
+    context.update({
+        "get_date": _get_date
+    })
 
     if os.path.exists(path):
         rmdir(path)
@@ -52,7 +59,7 @@ def prepare_test(test, test_path, path):
 
 
 def run_test(name, path):
-    prepare_test(name, path, "%s/%s" % ("staging", path))
+    prepare_test(name, path, "%s/%s/%s" % ("staging", path, name))
 
 
 def run_tests(root):

@@ -6,7 +6,6 @@
             "synopsis": "Don't pay attention to me"
         }
     ],
-    "date": "Tue, 14 Aug 2012 21:06:49 -0400",
     "debhelper": {
         "compat": "9",
         "version": "(>= 9)"
