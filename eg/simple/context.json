@@ -6,6 +6,7 @@
             "synopsis": "Don't pay attention to me"
         }
     ],
+    "compression": "gzip",
     "debhelper": {
         "compat": "9",
         "version": "(>= 9)"
@@ -21,6 +22,7 @@
     "suite": "unstable",
     "testname": null,
     "urgency": "low",
-    "version": "1.0-1",
-    "compression": "gzip"
+    "version": {
+        "upstream": "1.0"
+    }
 }

@@ -1,10 +1,12 @@
 {
+    "class": "source-native",
     "source": {
         "format": "3.0",
         "variant": "native"
     },
     "template": "source/generic",
     "testname": "native-dfsg",
-    "version": "1.0.dfsg1",
-    "class": "source-native"
+    "version": {
+        "upstream": "1.0.dfsg1"
+    }
 }

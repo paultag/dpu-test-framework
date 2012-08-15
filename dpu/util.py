@@ -76,7 +76,11 @@ def rm(file_name):
 
 
 def mv(source, dest):
-    return os.rename(source, dest)
+    if os.path.isdir(source):
+        cp(source, dest)
+        rmdir(source)
+    else:
+        return os.rename(source, dest)
 
 
 def rmdir(path):

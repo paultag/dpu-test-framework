@@ -6,5 +6,8 @@
     },
     "template": "source/generic",
     "testname": "dot-dfsg",
-    "version": "1.0.dfsg1-1"
+    "version": {
+        "debian": "1",
+        "upstream": "1.0.dfsg1"
+    }
 }

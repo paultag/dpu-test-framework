@@ -1,4 +1,4 @@
-{{src_pkg}} ({{version}}) {{suite}}; urgency={{urgency}}
+{{src_pkg}} ({{version.upstream}}{% if version.debian %}-{{version.debian}}{% endif %}) {{suite}}; urgency={{urgency}}
 
   * Lintian Test Suite.
   * Test: {{testname}}

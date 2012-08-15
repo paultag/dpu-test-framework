@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo $DPU_TEST_NAME

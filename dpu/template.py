@@ -1,11 +1,12 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
 
 import os
+import sys
 import subprocess
 from jinja2 import Template
 from email.Utils import formatdate
 
-from dpu.util import dir_walk, rm, cd, load_conf, mkdir, rmdir
+from dpu.util import dir_walk, rm, cd, load_conf, mkdir, rmdir, mv
 
 
 def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None,
@@ -58,11 +59,45 @@ def prepare_test(root, test, test_path, path):
                       test_path,
                       path)
     render_templates(path, context)
+    return context
+
+
+def run_class(workdir, context):
+
+    exports = {
+        "testname": "DPU_TEST_NAME",
+        "src_pkg": "DPU_SRC_PACKAGE"
+    }
+
+    env = {}
+
+    for export in exports:
+        env[exports[export]] = context[export]
+
+    full_version = context['version']['upstream']
+    if "debian" in context['version']:
+        full_version += "-%s" % (context['version']['debian'])
+        env['DPU_DEBIAN_VERSION'] = context['version']['debian']
+
+    env['DPU_SRC_VERSION'] = full_version
+    env['DPU_UPSTREAM_VERSION'] = context['version']['upstream']
+
+    subprocess.check_call(["classes/%s" % (context['class'])],
+                          env=env)
 
 
 def run_test(root, name, path):
     print "I: Preparing %s" % (name)
-    prepare_test(root, name, path, "%s/%s/%s" % ("staging", path, name))
+    workdir = "%s/%s/%s" % ("staging", path, name)
+    context = prepare_test(root, name, path, workdir)
+    nwd = "%s-%s" % (workdir, context['version']['upstream'])
+
+    if os.path.exists(nwd):
+        rmdir(nwd)
+
+    mv(workdir, nwd)
+    workdir = nwd
+    run_class(workdir, context)
 
 
 def run_tests(root):
