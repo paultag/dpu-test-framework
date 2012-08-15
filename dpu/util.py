@@ -1,13 +1,19 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
 
-from contextlib import contextmanager
-import os.path
-import shutil
 import os
+import json
 import errno
+import shutil
+import os.path
 from itertools import starmap, chain
+from contextlib import contextmanager
 
 flattern = chain.from_iterable
+
+
+def load_conf(path):
+    return json.load(open(path, 'r'))
+
 
 @contextmanager
 def cd(path):

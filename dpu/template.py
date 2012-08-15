@@ -2,8 +2,9 @@
 
 import os
 import subprocess
-from dpu.util import dir_walk, rm
 from jinja2 import Template
+
+from dpu.util import dir_walk, rm, cd, load_conf, mkdir, rmdir
 
 
 def copy_template_dir(skeldir, tsrcdir, targetdir, exclude_skel=None,
@@ -30,3 +31,33 @@ def render_templates(rundir, context):
             with open(template.rsplit(".", 1)[0], 'w') as obj:
                 obj.write(tobj.render(**context))
         rm(template)
+        # print "I: Rendered: %s" % (template)
+
+
+def prepare_test(test, test_path, path):
+    obj = load_conf("%s/test.json" % (test_path))
+    template = obj['template']
+
+    context = load_conf("%s/%s/context.json" % ("templates", template))
+    context.update(obj)
+
+    if os.path.exists(path):
+        rmdir(path)
+
+    mkdir(path)
+    copy_template_dir("%s/%s/template" % ("templates", template),
+                      test,
+                      path)
+    render_templates(path, context)
+
+
+def run_test(name, path):
+    prepare_test(name, path, "%s/%s" % ("staging", path))
+
+
+def run_tests(root):
+    with cd(root):
+        tests = os.listdir("tests")
+        for test in tests:
+            test_path = "%s/%s" % ("tests", test)
+            run_test(test, test_path)
