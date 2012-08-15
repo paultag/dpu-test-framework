@@ -1,4 +1,5 @@
 {
+    "class": "source-upstream",
     "source": {
         "format": "3.0",
         "variant": "quilt"

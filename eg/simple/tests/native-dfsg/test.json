@@ -5,5 +5,6 @@
     },
     "template": "source/generic",
     "testname": "native-dfsg",
-    "version": "1.0.dfsg1"
+    "version": "1.0.dfsg1",
+    "class": "source-native"
 }
