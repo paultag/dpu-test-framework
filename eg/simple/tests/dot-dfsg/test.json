@@ -1,4 +1,9 @@
 {
-    "template": "source/upstream",
+    "source": {
+        "format": "3.0",
+        "variant": "quilt"
+    },
+    "template": "source/generic",
+    "testname": "dot-dfsg",
     "version": "1.0.dfsg1-1"
 }
