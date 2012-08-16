@@ -23,7 +23,9 @@ contains-symlink entry
 #   -rw-r----- (file, mode 0644)
 #
 # NB: hardlinks have "h" mapped to "-" in tperm (see hardlinks below)
-contains-entry tperm ouser/ogroup entry
+#
+# FIXME: owner:group of source tarballs are not standardized.
+contains-entry tperm [ouser:ogroup] entry
 
 # Asserts that entry is not present in the tarball.
 not-present entry
@@ -56,6 +58,8 @@ link-target ltarget [entry]
 
 # Asserts that entry is present, has permission operm (octal only),
 # its owning user is named ouser and its owning group is ogroup.
+#
+# FIXME: owner:group of source tarballs are not standardized.
 perm operm [ouser:ogroup [entry]]
 
 # Assert that some/file and entry are both present, files (or
