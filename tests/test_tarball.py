@@ -2,7 +2,6 @@
 
 from functools import partial
 
-from dpu.util import disposabledir
 from dpu.tarball import make_orig_tarball, open_compressed_tarball
 
 from .tarball_helper import make_and_check_tarball
