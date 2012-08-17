@@ -14,26 +14,27 @@ def test_basic_walk():
     """
     Test to make sure we can walk a directory.
     """
-    with tmpdir("./tests/staging/test-basic-walk"):
-        mkdir("foo")
-        mkdir("bar")
-        mkdir("baz")
+    with tmpdir() as t:
+        with cd(t):
+            mkdir("foo")
+            mkdir("bar")
+            mkdir("baz")
 
-        targets = [
-            "./foo/bar.target",
-            "./foo/bar",
-            "./bar/foo.target",
-            "./baz/foo"
-        ]
+            targets = [
+                "./foo/bar.target",
+                "./foo/bar",
+                "./bar/foo.target",
+                "./baz/foo"
+            ]
 
-        for target in targets:
-            touch(target)
+            for target in targets:
+                touch(target)
 
-        for entry in dir_walk("./"):
-            assert entry in targets
-            targets.remove(entry)
+            for entry in dir_walk("./"):
+                assert entry in targets
+                targets.remove(entry)
 
-    assert targets == []
+        assert targets == []
 
 
 def test_more_walk():
