@@ -1,3 +1,6 @@
+# Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
+# license.
+
 import os
 import tarfile
 

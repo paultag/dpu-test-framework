@@ -1,4 +1,4 @@
-# Copyright (c) DPU maintainers under the terms and conditions of the GPL-2+
+# Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 """
 This module contains Template classes to aid with rendering out model files
