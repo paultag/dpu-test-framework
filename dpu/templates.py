@@ -5,7 +5,7 @@ This module contains Template classes to aid with rendering out model files
 into a test source directory.
 """
 
-from dpu.utils import rsync, tmpdir, dir_walk, rm, cd, abspath
+from dpu.utils import rsync, tmpdir, dir_walk, rm, abspath
 from jinja2 import Template
 
 
@@ -50,13 +50,12 @@ class JinjaTemplate(PlainTemplate):
 
         with tmpdir() as tmp:
             PlainTemplate.render(self, tmp)
-            with cd(tmp):
-                for template in dir_walk(tmp, xtn=".tpl"):
-                    with open(template, 'r') as fd:
-                        tobj = Template(fd.read())
-                        with open(template.rsplit(".", 1)[0], 'w') as obj:
-                            obj.write(tobj.render(**self.context))
-                    rm(template)
+            for template in dir_walk(tmp, xtn=".tpl"):
+                with open(template, 'r') as fd:
+                    tobj = Template(fd.read())
+                    with open(template.rsplit(".", 1)[0], 'w') as obj:
+                        obj.write(tobj.render(**self.context))
+                rm(template)
             rsync(tmp, dest)
 
     def setContext(self, context):
