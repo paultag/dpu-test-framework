@@ -4,11 +4,12 @@
 This module tests some basics in the utils class.
 """
 
-import os
 from dpu.utils import dir_walk, mkdir, tmpdir, cd
+
 
 def touch(fd):
     open(fd, 'a').close()
+
 
 def test_basic_walk():
     """

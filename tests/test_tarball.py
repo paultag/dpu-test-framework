@@ -2,9 +2,7 @@
 # license.
 
 from functools import partial
-
-from dpu.tarball import make_orig_tarball, open_compressed_tarball
-
+from dpu.tarball import open_compressed_tarball
 from .tarball_helper import make_and_check_tarball
 
 test_src = "test"
@@ -40,10 +38,12 @@ def visit_open_tarball(tar):
             print "Unexpected tarball member: %s" % tinfo.name
             assert False
 
+
 def visit_tarball_path(tarpath, compression=None):
     with open(tarpath, "rb") as f:
         with open_compressed_tarball(tarpath, compression, fd=f) as tar:
             visit_open_tarball(tar)
+
 
 make_visitor = lambda comp: partial(visit_tarball_path, compression=comp)
 
