@@ -1,18 +1,15 @@
 # Copyright (c) GNU GPL-2+, dpu-test-framework authors.
 
 import os
-import json
 import errno
 import shutil
 import os.path
+import tempfile
+import subprocess
 from itertools import starmap, chain
 from contextlib import contextmanager
 
 flattern = chain.from_iterable
-
-
-def load_conf(path):
-    return json.load(open(path, 'r'))
 
 
 @contextmanager
@@ -26,19 +23,14 @@ def cd(path):
 
 
 @contextmanager
-def disposabledir(path):
-    mkdir(path)
+def tmpdir():
+    path = tempfile.mkdtemp()
     try:
-        yield
+        yield path
     finally:
-        rmdir(path)
+        pass
+    rmdir(path)
 
-
-@contextmanager
-def tmpdir(path):
-    with disposabledir(path):
-        with cd(path):
-            yield
 
 def mkdir(folder, destroy_old=False):
     try:
@@ -90,5 +82,8 @@ def abspath(folder):
     return os.path.abspath(folder)
 
 
-def touch(fpath):
-    open(fpath, 'a').close()
+def rsync(source, target, excludes=None):
+    cmd = ['rsync', '-rpc', source + "/", target + "/"]
+    if excludes:
+        cmd.extend("--exclude=%s" % x for x in excludes)
+    subprocess.check_call(cmd, shell=False)
