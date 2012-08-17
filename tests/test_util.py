@@ -1,3 +1,9 @@
+# Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
+# license.
+"""
+This module tests some basics in the utils class.
+"""
+
 import os
 from dpu.utils import dir_walk, mkdir, tmpdir, cd
 
@@ -5,6 +11,9 @@ def touch(fd):
     open(fd, 'a').close()
 
 def test_basic_walk():
+    """
+    Test to make sure we can walk a directory.
+    """
     with tmpdir("./tests/staging/test-basic-walk"):
         mkdir("foo")
         mkdir("bar")
@@ -27,7 +36,11 @@ def test_basic_walk():
     assert targets == []
 
 
-def test_basic_walk():
+def test_more_walk():
+    """
+    Ensure s'more basics in walking a directory, with an extention
+    filter.
+    """
     with tmpdir() as t:
         with cd(t):
             mkdir("foo")

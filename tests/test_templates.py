@@ -1,3 +1,9 @@
+# Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
+# license.
+"""
+This module contains tests for the template system.
+"""
+
 from dpu.templates import PlainTemplate, JinjaTemplate
 from dpu.utils import tmpdir, cd
 import os.path
@@ -5,6 +11,9 @@ import os
 
 
 def assert_content(path, content):
+    """
+    Ensure the content is what we think it is.
+    """
     content_obj = open(path, 'r').read().strip()
     if content != content_obj:
         print "Path: %s" % (path)
@@ -15,6 +24,9 @@ def assert_content(path, content):
 
 
 def test_plain_template_basic():
+    """
+    Ensure basic sanity with the PlainTemplate system.
+    """
     with tmpdir() as tmp:
         pt1 = PlainTemplate("tests/resources/templates/plain1")
         pt1.render(tmp)
@@ -24,6 +36,10 @@ def test_plain_template_basic():
 
 
 def test_plain_template_advanced():
+    """
+    Ensure sanity when two PlainTemplates are rendered together,
+    along with a directory.
+    """
     with tmpdir() as tmp:
         pt1 = PlainTemplate("tests/resources/templates/plain1")
         pt2 = PlainTemplate("tests/resources/templates/plain2")
@@ -44,6 +60,9 @@ def test_plain_template_advanced():
 
 
 def test_jinja_template_basic():
+    """
+    Ensure basic Jinja sanity.
+    """
     with tmpdir() as tmp:
         jt1 = JinjaTemplate("tests/resources/templates/jinja1")
 
@@ -66,6 +85,9 @@ def test_jinja_template_basic():
 
 
 def test_jinja_template_advanced():
+    """
+    Ensure multi-Jinja sanity, as well as nested files.
+    """
     with tmpdir() as tmp:
         jt1 = JinjaTemplate("tests/resources/templates/jinja1")
         jt2 = JinjaTemplate("tests/resources/templates/jinja2")
