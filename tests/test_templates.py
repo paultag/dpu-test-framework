@@ -9,6 +9,7 @@ def assert_content(path, content):
     if content != content_obj:
         print "Path: %s" % (path)
         print "Expt: %s" % (content)
+        print "Got:  %s" % (content_obj)
 
     assert content == content_obj
 
