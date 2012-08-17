@@ -7,7 +7,6 @@ into a test source directory.
 
 from dpu.utils import rsync, tmpdir, dir_walk, rm, cd, abspath
 from jinja2 import Template
-import os
 
 
 class PlainTemplate(object):
@@ -19,15 +18,15 @@ class PlainTemplate(object):
 
     def __init__(self, where):
         """
-        `where' is a path (abs or rel) to the Template directory, to be rendered
-        when one invokes `render()' on this class.
+        `where' is a path (abs or rel) to the Template directory, to be
+        rendered when one invokes `render()' on this class.
         """
         self._template_path = abspath(where)
 
     def render(self, dest):
         """
-        `dest' is a path (abs or rel) to the output directory, or where to write
-        the model files to.
+        `dest' is a path (abs or rel) to the output directory, or where to
+        write the model files to.
         """
         dest = abspath(dest)
         rsync(self._template_path, dest)
@@ -42,9 +41,10 @@ class JinjaTemplate(PlainTemplate):
 
     def render(self, dest):
         """
-        `dest' is a path (abs or rel) to the output directory, or where to write
-        the model files to. Be extra-sure to call setContext on this particular
-        class, it's important to render out the Jinja context correctly.
+        `dest' is a path (abs or rel) to the output directory, or where to
+        write the model files to. Be extra-sure to call setContext on this
+        particular class, it's important to render out the Jinja context
+        correctly.
         """
         dest = abspath(dest)
 
@@ -58,7 +58,6 @@ class JinjaTemplate(PlainTemplate):
                             obj.write(tobj.render(**self.context))
                     rm(template)
             rsync(tmp, dest)
-
 
     def setContext(self, context):
         """

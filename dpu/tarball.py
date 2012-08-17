@@ -150,6 +150,7 @@ def _close_pipeline(tobj, procfd, proc, compression):
         # re-raise the exception
         raise
 
+
 def _determine_compression(filename):
     ext = os.path.splitext(filename)[1]
     if not ext:
