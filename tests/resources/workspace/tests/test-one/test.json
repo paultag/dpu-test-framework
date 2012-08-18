@@ -1,5 +1,6 @@
 {
     "description": "Verify this and that.",
     "template": "generic",
-    "testname": "test-one"
+    "testname": "test-one",
+    "foo": "bar"
 }

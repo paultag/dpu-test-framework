@@ -1,4 +1,5 @@
 {
+    "bar": "bar",
     "binaries": [
         {
             "architecture": "all",
@@ -11,6 +12,7 @@
         "compat": "9",
         "version": "(>= 9)"
     },
+    "foo": "foo",
     "homepage": "http://debian.org",
     "maintainer": "John Q. Hacker <jhacker@example.com>",
     "priority": "optional",

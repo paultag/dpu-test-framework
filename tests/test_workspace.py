@@ -17,3 +17,10 @@ def test_test_finder():
     for test in ws.tests():
         tests.remove(test.test_id)
     assert tests == []
+
+
+def test_test_context():
+    ws = Workspace(workspace)
+    for test in ws.tests():
+        assert test._context['foo'] != 'foo'
+        assert test._context['bar'] == 'bar'
