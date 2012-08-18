@@ -84,9 +84,9 @@ def test_insane_compression_fails():
             try:
                 make_orig_tarball(".", pkgname, version,
                                   compression="asfasf")
-                assert True == False
+                assert True is False
             except ValueError:
-                assert True == True
+                assert True is True
 
 
 def test_compression_guesser():
@@ -103,9 +103,9 @@ def test_compression_guesser():
     for thing in insane:
         try:
             _determine_compression(thing)
-            assert True == False
+            assert True is False
         except ValueError:
-            assert True == True
+            assert True is True
 
 
 def test_gzip():

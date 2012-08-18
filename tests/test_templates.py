@@ -146,7 +146,7 @@ def test_debian_shim_there():
         ds.render(tmp)
 
 
-def test_debian_shim_there():
+def test_debian_shim_there_two():
     """
     Ensure the Debian shim won't remove files other then the Debian/
     directory.

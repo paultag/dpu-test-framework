@@ -99,3 +99,15 @@ Natrually there will always be code that doesn't need a test, or perhaps
 is too complex to test on a regular basis (or the handling of a state that
 causes failure anyway), so don't worry too much about the 100%. Let's just
 test 100% of what we can :)
+
+Linting the code
+----------------
+
+In general, one should routinely lint the codebase for pep8 and pyflakes
+issues. It's our intent to keep dpu and tests both pep8 and flake8 clean.
+
+You can verify the flake8-ness of a project with the following command:
+
+    flake8 dpu tests
+
+Please do keep this in mind.
