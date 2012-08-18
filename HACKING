@@ -148,10 +148,10 @@ Linting the code
 ----------------
 
 In general, one should routinely lint the codebase for pep8 and pyflakes
-issues. It's our intent to keep dpu and tests both pep8 and flake8 clean.
+issues. It's our intent to keep dpu and tests both pep8 and pyflakes clean.
 
 You can verify the flake8-ness of a project with the following command:
 
     flake8 dpu tests
 
-Please do keep this in mind.
+This will test for both pep8 issues, and pyflakes issues. Nice, right?
