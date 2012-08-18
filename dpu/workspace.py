@@ -9,7 +9,16 @@ import os
 
 
 class Test(object):
+    """
+    This is an object that is able to preform all the functions of building
+    and running the test.
+    """
+
     def __init__(self, path, test_id, workspace):
+        """
+        We require three arguments - a path to the test, a unique id, and the
+        workspace object we fall back on.
+        """
         self._test_path = path
         self._context = load_config("%s/test.json" % (path))
         self._workspace = workspace
@@ -17,19 +26,33 @@ class Test(object):
         self.test_id = test_id
 
     def set_global_context(self, config):
+        """
+        Re-set the global context (or rather, set the context to this, updated
+        with the current context).
+        """
         cfg = config
         cfg.update(self._context)
         self._context = cfg
         self._update_context()
 
     def _update_context(self):
+        """
+        This is called after we update the context. This keeps the generated
+        instance variables up to date.
+        """
         self.name = self._context['testname']
 
     def get_source_and_version(self):
+        """
+        Get the test's source package name, and version.
+        """
         return (self._context['source'],
                 self._context['version'])
 
     def get_template_stack(self):
+        """
+        Get the template stack in the form of the TemplateManager.
+        """
         ctx = self._context
         tm = TemplateManager()
         native = ctx['native']
