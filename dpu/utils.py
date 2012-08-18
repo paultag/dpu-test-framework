@@ -2,6 +2,7 @@
 # license.
 
 import os
+import json
 import errno
 import shutil
 import os.path
@@ -11,6 +12,10 @@ from itertools import starmap, chain
 from contextlib import contextmanager
 
 flattern = chain.from_iterable
+
+
+def load_config(fpath):
+    return json.load(open(fpath, 'r'))
 
 
 @contextmanager

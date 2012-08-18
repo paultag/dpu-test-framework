@@ -1,4 +1,5 @@
 {
-    "testname": "test-one",
-    "description": "Verify this and that."
+    "description": "Verify this and that.",
+    "template": "generic",
+    "testname": "test-one"
 }
