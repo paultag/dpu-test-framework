@@ -43,6 +43,9 @@ class JinjaTemplate(PlainTemplate):
     Jinja2 template files (marked with a .tpl extention) out to the output
     directory.
     """
+    def __init__(self, where, context=None):
+        PlainTemplate.__init__(self, where)
+        self.set_context(context)
 
     def render(self, dest):
         """
@@ -63,7 +66,7 @@ class JinjaTemplate(PlainTemplate):
                 rm(template)
             rsync(tmp, dest)
 
-    def setContext(self, context):
+    def set_context(self, context):
         """
         This sets the context (just treat it as a dict) to be used during the
         Jinja2 rendering process.
@@ -86,7 +89,7 @@ class UpstreamShim(PlainTemplate):
         self.pkgname = pkgname
         self.version = version
 
-    def setCompression(self, compression):
+    def set_compression(self, compression):
         self.compression = compression
 
     def render(self, dest):
@@ -129,6 +132,16 @@ class TemplateManager(object):
     def _get_template(self, name):
         global _templates
         return getattr(_templates, name, None)
+
+    def add_template(self, template_type, *args, **kwargs):
+        template = self._get_template(template_type)
+        if template is None:
+            raise ValueError("%s: No such template" % (template_type))
+        self._chain.append(template(*args, **kwargs))
+
+    def render(self, dest):
+        for guy in self._chain:
+            guy.render(dest)
 
 # Example:
 #

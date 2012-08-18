@@ -8,7 +8,7 @@ from dpu.templates import (PlainTemplate, JinjaTemplate,
                            DebianShim, UpstreamShim,
                            TemplateManager)
 
-from dpu.utils import tmpdir, cd, mkdir
+from dpu.utils import tmpdir, cd, mkdir, abspath
 import os.path
 import os
 
@@ -75,7 +75,7 @@ def test_jinja_template_basic():
             "plop": "plop1"
         }
 
-        jt1.setContext(context)
+        jt1.set_context(context)
         jt1.render(tmp)
 
         with cd(tmp):
@@ -103,8 +103,8 @@ def test_jinja_template_advanced():
             "go": "go",
         }
 
-        jt1.setContext(context)
-        jt2.setContext(context)
+        jt1.set_context(context)
+        jt2.set_context(context)
         jt1.render(tmp)
         jt2.render(tmp)
 
@@ -176,7 +176,7 @@ def test_upstream_shim():
         with cd(tmp):
             mkdir("%s-%s" % (pkgname, version))
         uss = UpstreamShim(pkgname, version)
-        uss.setCompression("gzip")
+        uss.set_compression("gzip")
         uss.render(tmp)
         assert "%s/%s_%s.orig.tar.gz" % (tmp, pkgname, version)
         assert "%s/%s-%s" % (tmp, pkgname, version)
@@ -196,3 +196,35 @@ def test_template_voodoo():
     tplm = TemplateManager()
     for templ in templs:
         assert tplm._get_template(templ) == templs[templ]
+
+
+def test_template_manager_error():
+    tm = TemplateManager()
+    try:
+        tm.add_template("foo")
+        assert True is False
+    except ValueError:
+        pass
+
+def test_template_manager():
+    template_dir = abspath("./tests/resources/templates/")
+    templs = {
+        "plain1": "PlainTemplate",
+        "jinja1": "JinjaTemplate",
+        "jinja2": "JinjaTemplate"
+    }
+    context = {
+        "foo": "foo"
+    }
+    with tmpdir() as tmp:
+        tplm = TemplateManager()
+        for template in templs:
+            kwargs = {}
+            klasse = templs[template]
+            if klasse == "JinjaTemplate":
+                kwargs['context'] = context
+
+            tplm.add_template(klasse, os.path.join(template_dir, template),
+                              **kwargs)
+
+        tplm.render(tmp)

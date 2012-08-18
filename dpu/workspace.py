@@ -20,9 +20,6 @@ class Test(object):
         self._context = cfg
         self._update_context()
 
-    def get_template_chain(self):
-        pass
-
     def _update_context(self):
         self.name = self._context['testname']
 
