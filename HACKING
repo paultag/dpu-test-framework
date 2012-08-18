@@ -140,6 +140,10 @@ test 100% of what we can :)
 
 We'll be looking, so don't make us ask :)
 
+If you prefer looking at something a bit nicer (including what's been
+run and what's not), add the `--cover-html` flag to `nosetests`, and
+kick open index.html in `./cover`.
+
 Linting the code
 ----------------
 
