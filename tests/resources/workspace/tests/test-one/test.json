@@ -1,6 +1,12 @@
 {
+    "debian": [
+        "debian"
+    ],
     "description": "Verify this and that.",
+    "foo": "bar",
     "template": "generic",
     "testname": "test-one",
-    "foo": "bar"
+    "upstream": [
+        "upstream"
+    ]
 }

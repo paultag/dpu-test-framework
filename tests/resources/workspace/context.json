@@ -13,6 +13,10 @@
         "version": "(>= 9)"
     },
     "foo": "foo",
+    "format": {
+        "variant": "quilt",
+        "version": "3.0"
+    },
     "homepage": "http://debian.org",
     "maintainer": "John Q. Hacker <jhacker@example.com>",
     "priority": "optional",

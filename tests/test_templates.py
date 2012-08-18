@@ -206,6 +206,7 @@ def test_template_manager_error():
     except ValueError:
         pass
 
+
 def test_template_manager():
     template_dir = abspath("./tests/resources/templates/")
     templs = {

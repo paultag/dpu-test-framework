@@ -8,9 +8,10 @@ import os
 
 
 class Test(object):
-    def __init__(self, path, test_id):
+    def __init__(self, path, test_id, workspace):
         self._test_path = path
         self._context = load_config("%s/test.json" % (path))
+        self._workspace = workspace
         self._update_context()
         self.test_id = test_id
 
@@ -23,6 +24,10 @@ class Test(object):
     def _update_context(self):
         self.name = self._context['testname']
 
+    def _template_search(self, name):
+        # Search the local stuff, then fall back on the workspace.
+        pass
+
 
 class Workspace(object):
     def __init__(self, workspace):
@@ -33,11 +38,12 @@ class Workspace(object):
         self._test_dir = "%s/tests" % (workspace)
         self._context = load_config("%s/context.json" % (workspace))
 
+    def get_test(self, test):
+        fpath = os.path.join(self._test_dir, test)
+        tobj = Test(fpath, test, self)
+        tobj.set_global_context(self._context)
+        return tobj
+
     def tests(self):
         for test in os.listdir(self._test_dir):
-            fpath = os.path.join(self._test_dir, test)
-
-            tobj = Test(fpath, test)
-            tobj.set_global_context(self._context)
-
-            yield tobj
+            yield self.get_test(test)
