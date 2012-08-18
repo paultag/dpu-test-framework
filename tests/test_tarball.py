@@ -1,9 +1,14 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
-from functools import partial
-from dpu.tarball import open_compressed_tarball
+from dpu.tarball import (open_compressed_tarball, make_orig_tarball,
+                         _determine_compression)
+
 from .tarball_helper import make_and_check_tarball
+from dpu.utils import tmpdir, cd, mkdir
+from functools import partial
+import os.path
+import os
 
 test_src = "test"
 test_ver = "1.0"
@@ -50,6 +55,57 @@ make_visitor = lambda comp: partial(visit_tarball_path, compression=comp)
 
 mctar = partial(make_and_check_tarball, "test_tarball",
                 rundir, test_src, test_ver)
+
+
+def test_localdir_generation():
+    pkgname = "pkgfoo"
+    version = "2.0"
+    debdir = "%s-%s" % (pkgname, version)
+    compression = "bzip2"
+    tarball = "%s_%s.orig.tar.bz2" % (pkgname, version)
+
+    with tmpdir() as tmp:
+        with cd(tmp):
+            mkdir(debdir)
+            assert not os.path.exists(tarball)
+            make_orig_tarball(".", pkgname, version,
+                              compression=compression)
+            assert os.path.exists(tarball)
+
+
+def test_insane_compression_fails():
+    pkgname = "pkgfoo"
+    version = "2.0"
+    debdir = "%s-%s" % (pkgname, version)
+
+    with tmpdir() as tmp:
+        with cd(tmp):
+            mkdir(debdir)
+            try:
+                make_orig_tarball(".", pkgname, version,
+                                  compression="asfasf")
+                assert True == False
+            except ValueError:
+                assert True == True
+
+
+def test_compression_guesser():
+    things = {
+        "foo.tar.gz": "gzip",
+        "foo.tar.bz2": "bzip2",
+        "foo.tar.xz": "xz",
+        "foo.tar.lzma": "lzma"
+    }
+    for thing in things:
+        assert things[thing] == _determine_compression(thing)
+
+    insane = ['foo', 'bar.baz']
+    for thing in insane:
+        try:
+            _determine_compression(thing)
+            assert True == False
+        except ValueError:
+            assert True == True
 
 
 def test_gzip():
