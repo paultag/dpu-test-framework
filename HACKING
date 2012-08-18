@@ -9,6 +9,7 @@ there's little chance you'll be hit by complex gotchas.
 
   - Paul & Niels
 
+
 Contribution Guidelines
 =======================
 
@@ -16,6 +17,31 @@ When sending in a change, please also be clear that you're licensing the
 contirbution under the terms on DPU it's self, which is GPL-2+ at the moment.
 
 Please add yourself to AUTHORS on your *FIRST* contribution to DPU.
+
+Teamwork makes the dream work, folks.
+
+
+Code Style Notes
+================
+
+Please ensure everything's flake8 clean (for more, see "Linting the code")
+under "Working with Python".
+
+Please use descriptive names for everything. Remember, we read more code
+then we write, let's keep it tidy.
+
+Please use really clear names for anything public-facing (non-underscored
+anything in any module / class / whatever), and add docstrings to all
+public functions, methods, classes, modules, and even private ones if they
+need them.
+
+Use good Pythonic(tm) sense when writing code. Try to keep everything fresh
+and neat.
+
+If you add code, or new code paths, please add a test for it in the sane
+place. Remember to check your coverage reports -- see
+"Running the system tests" for more on that.
+
 
 Working with Python
 ===================
