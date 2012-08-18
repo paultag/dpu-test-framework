@@ -9,6 +9,9 @@ from dpu.utils import rsync, tmpdir, dir_walk, rm, abspath, rmdir
 from dpu.tarball import make_orig_tarball
 from jinja2 import Template
 import os.path
+import sys
+
+_templates = sys.modules[__name__]
 
 
 class PlainTemplate(object):
@@ -118,6 +121,14 @@ class DebianShim(PlainTemplate):
         if os.path.exists(debdir):
             rmdir(debdir)
 
+
+class TemplateManager(object):
+    def __init__(self):
+        self._chain = []
+
+    def _get_template(self, name):
+        global _templates
+        return getattr(_templates, name, None)
 
 # Example:
 #

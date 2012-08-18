@@ -5,7 +5,8 @@ This module contains tests for the template system.
 """
 
 from dpu.templates import (PlainTemplate, JinjaTemplate,
-                           DebianShim, UpstreamShim)
+                           DebianShim, UpstreamShim,
+                           TemplateManager)
 
 from dpu.utils import tmpdir, cd, mkdir
 import os.path
@@ -179,3 +180,19 @@ def test_upstream_shim():
         uss.render(tmp)
         assert "%s/%s_%s.orig.tar.gz" % (tmp, pkgname, version)
         assert "%s/%s-%s" % (tmp, pkgname, version)
+
+
+def test_template_voodoo():
+    """
+    Make sure this crazy hack is still working
+    """
+    templs = {
+        "PlainTemplate": PlainTemplate,
+        "JinjaTemplate": JinjaTemplate,
+        "DebianShim": DebianShim,
+        "UpstreamShim": UpstreamShim,
+        "FakeName": None
+    }
+    tplm = TemplateManager()
+    for templ in templs:
+        assert tplm._get_template(templ) == templs[templ]

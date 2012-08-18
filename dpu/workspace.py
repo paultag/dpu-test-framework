@@ -14,11 +14,14 @@ class Test(object):
         self._update_context()
         self.test_id = test_id
 
-    def setGlobalContext(self, config):
+    def set_global_context(self, config):
         cfg = config
         cfg.update(self._context)
         self._context = cfg
         self._update_context()
+
+    def get_template_chain(self):
+        pass
 
     def _update_context(self):
         self.name = self._context['testname']
@@ -38,6 +41,6 @@ class Workspace(object):
             fpath = os.path.join(self._test_dir, test)
 
             tobj = Test(fpath, test)
-            tobj.setGlobalContext(self._context)
+            tobj.set_global_context(self._context)
 
             yield tobj
