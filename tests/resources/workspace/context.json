@@ -1,0 +1,28 @@
+{
+    "binaries": [
+        {
+            "architecture": "all",
+            "name": "pkgfoo",
+            "synopsis": "Hello, World!"
+        }
+    ],
+    "date": "Sat, 18 Aug 2012 16:22:26 -0400",
+    "debhelper": {
+        "compat": "9",
+        "version": "(>= 9)"
+    },
+    "homepage": "http://debian.org",
+    "maintainer": "John Q. Hacker <jhacker@example.com>",
+    "priority": "optional",
+    "section": "devel",
+    "source": "pkgfoo",
+    "standards_version": "3.9.3",
+    "suite": "unstable",
+    "synopsis": "kruft!",
+    "urgency": "low",
+    "version": {
+        "debian": "1",
+        "epoch": null,
+        "upstream": "1.0"
+    }
+}
