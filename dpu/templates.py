@@ -56,6 +56,10 @@ class JinjaTemplate(PlainTemplate):
         """
         dest = abspath(dest)
 
+        if self.context is None:
+            print self._template_path
+            raise ValueError("No context set for this JinjaTemplate")
+
         with tmpdir() as tmp:
             PlainTemplate.render(self, tmp)
             for template in dir_walk(tmp, xtn=".tpl"):
@@ -98,6 +102,7 @@ class UpstreamShim(PlainTemplate):
         directory. We also expect that `dest' is in pkgname-verson format,
         ready for taring up.
         """
+        dest = abspath("%s/../" % (dest))
         make_orig_tarball(dest, self.pkgname, self.version,
                           compression=self.compression,
                           outputdir=dest)
@@ -133,11 +138,16 @@ class TemplateManager(object):
         global _templates
         return getattr(_templates, name, None)
 
+    def add_real_template(self, template):
+        if template is None:
+            raise ValueError("Template is None.")
+        self._chain.append(template)
+
     def add_template(self, template_type, *args, **kwargs):
         template = self._get_template(template_type)
         if template is None:
             raise ValueError("%s: No such template" % (template_type))
-        self._chain.append(template(*args, **kwargs))
+        self.add_real_template(template(*args, **kwargs))
 
     def render(self, dest):
         for guy in self._chain:

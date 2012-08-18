@@ -4,9 +4,9 @@
     ],
     "description": "Verify this and that.",
     "foo": "bar",
+    "native": false,
     "template": "generic",
     "testname": "test-one",
-    "native": false,
     "upstream": [
         "upstream"
     ]

@@ -3,7 +3,8 @@
 """
 This module manages the test workspace, and helps manage the tests.
 """
-from dpu.utils import load_config
+from dpu.templates import TemplateManager, JinjaTemplate
+from dpu.utils import load_config, abspath
 import os
 
 
@@ -24,11 +25,44 @@ class Test(object):
     def _update_context(self):
         self.name = self._context['testname']
 
+    def get_source_and_version(self):
+        return (self._context['source'],
+                self._context['version'])
+
+    def get_template_stack(self):
+        ctx = self._context
+        tm = TemplateManager()
+        native = ctx['native']
+        root_template = self._template_search(ctx['template'])
+        debian = []
+        upstream = ctx['upstream']
+
+        pkgname, version = self.get_source_and_version()
+        version = version['upstream']
+
+        if native:
+            tm.add_real_template(root_template)
+
+        for template in upstream:
+            tm.add_real_template(self.get_template(template))
+
+        if not native:
+            tm.add_template("UpstreamShim", pkgname, version)
+            tm.add_template("DebianShim")
+            tm.add_real_template(root_template)
+            debian = ctx['debian']
+
+        for template in debian:
+            tm.add_real_template(self.get_template(template))
+
+        return tm
+
     def get_template(self, name):
         path = abspath("%s/%s" % (self._test_path, name))
+        ctx = self._context
         if os.path.exists(path):
             return JinjaTemplate(path,
-                                 context=self._context)
+                                 context=ctx)
         return None
 
     def _template_search(self, name):

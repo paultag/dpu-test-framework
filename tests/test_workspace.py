@@ -5,7 +5,7 @@ This module tests the workspace system
 """
 
 from dpu.workspace import Workspace
-from dpu.utils import abspath
+from dpu.utils import abspath, tmpdir, mkdir
 import os
 
 workspace = abspath("./tests/resources/workspace")
@@ -24,3 +24,16 @@ def test_test_context():
     for test in ws.tests():
         assert test._context['foo'] != 'foo'
         assert test._context['bar'] == 'bar'
+
+
+def test_templater():
+    ws = Workspace(workspace)
+    test = ws.get_test("test-one")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
+
+    tm = test.get_template_stack()
+    with tmpdir() as tmp:
+        path = "%s/%s-%s" % (tmp, source, version)
+        mkdir(path)
+        tm.render(path)

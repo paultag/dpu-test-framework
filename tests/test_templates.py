@@ -175,6 +175,7 @@ def test_upstream_shim():
     with tmpdir() as tmp:
         with cd(tmp):
             mkdir("%s-%s" % (pkgname, version))
+        tmp += "/%s-%s" % (pkgname, version)
         uss = UpstreamShim(pkgname, version)
         uss.set_compression("gzip")
         uss.render(tmp)
