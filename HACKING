@@ -95,7 +95,8 @@ Installing dpu's module
 -----------------------
 
 You should consider using the `develop' mode (which is a setuptools quirk)
-to work on dpu, which can be done the follow (inside your virtualenv)
+to work on dpu, which can be done with the following commands (inside your
+virtualenv)
 
     workon dpu  # If you need to
     python setup.py develop
