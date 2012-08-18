@@ -6,6 +6,7 @@
     "foo": "bar",
     "template": "generic",
     "testname": "test-one",
+    "native": false,
     "upstream": [
         "upstream"
     ]

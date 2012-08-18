@@ -24,9 +24,20 @@ class Test(object):
     def _update_context(self):
         self.name = self._context['testname']
 
+    def get_template(self, name):
+        path = abspath("%s/%s" % (self._test_path, name))
+        if os.path.exists(path):
+            return JinjaTemplate(path,
+                                 context=self._context)
+        return None
+
     def _template_search(self, name):
-        # Search the local stuff, then fall back on the workspace.
-        pass
+        local_search = self.get_template(name)
+        if local_search is None:
+            templ = self._workspace.get_template(name)
+            templ.set_context(self._context)
+            return templ
+        return local_search
 
 
 class Workspace(object):
@@ -37,6 +48,12 @@ class Workspace(object):
         self._workspace_path = workspace
         self._test_dir = "%s/tests" % (workspace)
         self._context = load_config("%s/context.json" % (workspace))
+
+    def get_template(self, name):
+        path = abspath("%s/templates/%s" % (self._workspace_path, name))
+        if os.path.exists(path):
+            return JinjaTemplate(path)
+        return None
 
     def get_test(self, test):
         fpath = os.path.join(self._test_dir, test)
