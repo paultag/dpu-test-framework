@@ -21,7 +21,7 @@ Working with Python
 ===================
 
 Although the final package is intended to be run out of an installed .deb, you
-might find working with the source easier using some more pythonic methods.
+might find working with the source easier using some more pythonic tools
 
 VirtualEnv
 ----------
@@ -57,11 +57,12 @@ Installing Dependencies via pip
 Please do not do this without setting up virtualenv. Never (I repeat: NEVER)
 run pip with sudo. This is bad juju.
 
-In dpu/, you'll find a `requirements.txt' file, which has a list of deps
-needed to hack on DPU.
+In the top of the source tree you'll find a `requirements.txt' file, which has
+a list of deps needed to hack on DPU. Not all of these are runtime deps.
 
 Install them via the following:
 
+    workon dpu  # If you need to
     pip install -r requirements.txt
 
 Installing dpu's module
@@ -70,6 +71,7 @@ Installing dpu's module
 You should consider using the `develop' mode (which is a setuptools quirk)
 to work on dpu, which can be done the follow (inside your virtualenv)
 
+    workon dpu  # If you need to
     python setup.py develop
 
 This (basically) symlinks the package into the env, so when you change a file,
@@ -84,12 +86,14 @@ Running the system tests
 setup.cfg contains a few options for the test framework called "nose", which
 we use. Nose is pretty nifty, and you don't have to do much to use it.
 
-Simply invoke `nosetests' on the top of the project directory.
+Simply invoke `nosetests' on the top of the project directory. Remember to
+enter your virtualenv (or, if you don't want to, be sure to install nose
+*AND* the coverage module)
 
-The test output features nedbat (mad props!) coverage python script, which
+The test output features nedbat's (mad props!) coverage python script, which
 we make use of.
 
-Following a unit test, we get the coverage report, which looks like:
+Following a test run, we get the coverage report, which looks like:
 
     Name            Stmts   Miss  Cover   Missing
     ---------------------------------------------
@@ -107,6 +111,8 @@ Natrually there will always be code that doesn't need a test, or perhaps
 is too complex to test on a regular basis (or the handling of a state that
 causes failure anyway), so don't worry too much about the 100%. Let's just
 test 100% of what we can :)
+
+We'll be looking, so don't make us ask :)
 
 Linting the code
 ----------------
