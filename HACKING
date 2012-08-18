@@ -156,3 +156,13 @@ You can verify the flake8-ness of a project with the following command:
     flake8 dpu tests
 
 This will test for both pep8 issues, and pyflakes issues. Nice, right?
+
+
+Installing DPU via dpkg
+=======================
+
+When using DPU for deployments, please install it via dpkg (as one should).
+When building the package, you should remember to run `deactivate', if you're
+currently in a virtualenv, otherwise the package will do some quirky things
+with file placement (since PYTHONPATH (etc) is wonky), and end up writing
+to your ~/
