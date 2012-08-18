@@ -4,7 +4,9 @@
 This module contains tests for the template system.
 """
 
-from dpu.templates import PlainTemplate, JinjaTemplate, DebianShim
+from dpu.templates import (PlainTemplate, JinjaTemplate,
+                           DebianShim, UpstreamShim)
+
 from dpu.utils import tmpdir, cd, mkdir
 import os.path
 import os
@@ -161,3 +163,19 @@ def test_debian_shim_there():
         assert not os.path.exists(debdir)
         assert os.path.exists(testfd)
         ds.render(tmp)
+
+
+def test_upstream_shim():
+    """
+    Ensure we create a debian tarball thinger.
+    """
+    pkgname = "testpkg-name"
+    version = "1.0"
+    with tmpdir() as tmp:
+        with cd(tmp):
+            mkdir("%s-%s" % (pkgname, version))
+        uss = UpstreamShim(pkgname, version)
+        uss.setCompression("gzip")
+        uss.render(tmp)
+        assert "%s/%s_%s.orig.tar.gz" % (tmp, pkgname, version)
+        assert "%s/%s-%s" % (tmp, pkgname, version)

@@ -6,6 +6,7 @@ into a test source directory.
 """
 
 from dpu.utils import rsync, tmpdir, dir_walk, rm, abspath, rmdir
+from dpu.tarball import make_orig_tarball
 from jinja2 import Template
 import os.path
 
@@ -74,11 +75,16 @@ class UpstreamShim(PlainTemplate):
     stuff. This allows for non-native emulation.
     """
 
-    def __init__(self):
+    def __init__(self, pkgname, version):
         """
         OK, we're overloading this because we don't need a model directory.
         """
-        pass  # Overload, we don't need an arg for a shim
+        self.compression = "gzip"
+        self.pkgname = pkgname
+        self.version = version
+
+    def setCompression(self, compression):
+        self.compression = compression
 
     def render(self, dest):
         """
@@ -86,7 +92,9 @@ class UpstreamShim(PlainTemplate):
         directory. We also expect that `dest' is in pkgname-verson format,
         ready for taring up.
         """
-        pass  # Tar up the dest to ../
+        make_orig_tarball(dest, self.pkgname, self.version,
+                          compression=self.compression,
+                          outputdir=dest)
 
 
 class DebianShim(PlainTemplate):
