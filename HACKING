@@ -1,0 +1,101 @@
+Hacking on DPU
+==============
+
+Hello, friendly hacker!
+
+This document serves as a brain-dump about important things when working on
+this package. It's a skitch complex, but not bad. If you stick to what's here
+there's little chance you'll be hit by complex gotchas.
+
+Contribution Guidelines
+=======================
+
+When sending in a change, please also be clear that you're licensing the
+contirbution under the terms on DPU it's self, which is GPL-2+ at the moment.
+
+Please add yourself to AUTHORS on your *FIRST* contribution to DPU.
+
+Working with Python
+===================
+
+Although the final package is intended to be run out of an installed .deb, you
+might find working with the source easier using some more pythonic methods.
+
+VirtualEnv
+----------
+
+I strongly suggest using virtualenv. Installing virtualenvwrapper is a simple
+apt-get away, and it helps isolate per-package requirements, and allow you to
+contain projects in their own little systems. Although this package is unlikely
+to be the cause of such problems, it's nice to use.
+
+   sudo apt-get install virtualenvwrapper
+
+After it's installed, you should restart your terminal. It uses some hacks
+via /etc/bash_completion.d/, so you need to refresh your session after
+installing it.
+
+The first run after will feature lots of noisy spew, but that's a one-time
+thing.
+
+Now, let's set up the virtualenv to work on.
+
+    mkvirtualenv dpu
+
+This will automatically call:
+
+    workon dpu
+
+which will get you in your isolated env. To get out of the env (and back to
+the system defaults), type `deactivate'.
+
+Installing Dependencies via pip
+-------------------------------
+
+Please do not do this without setting up virtualenv. Never (I repeat: NEVER)
+run pip with sudo. This is bad juju.
+
+In dpu/, you'll find a `requirements.txt' file, which has a list of deps
+needed to hack on DPU.
+
+Install them via the following:
+
+    pip install -r requirements.txt
+
+Installing dpu's module
+-----------------------
+
+You should consider using the `develop' mode (which is a setuptools quirk)
+to work on dpu, which can be done the follow (inside your virtualenv)
+
+    python setup.py develop
+
+Running the system tests
+------------------------
+
+setup.cfg contains a few options for the test framework called "nose", which
+we use. Nose is pretty nifty, and you don't have to do much to use it.
+
+Simply invoke `nosetests' on the top of the project directory.
+
+The test output features nedbat (mad props!) coverage python script, which
+we make use of.
+
+Following a unit test, we get the coverage report, which looks like:
+
+    Name            Stmts   Miss  Cover   Missing
+    ---------------------------------------------
+    dpu                 2      0   100%
+    dpu.tarball        82      9    89%   140-151
+    dpu.templates      41      0   100%
+    dpu.utils          58     15    74%   39-43, 56-60, 64, 72-75, 89
+    ---------------------------------------------
+    TOTAL             183     24    87%
+
+This shows the coverage of the tests, and which lines are missing from tests.
+
+In general, when adding new code, please add tests for all the code you can.
+Natrually there will always be code that doesn't need a test, or perhaps
+is too complex to test on a regular basis (or the handling of a state that
+causes failure anyway), so don't worry too much about the 100%. Let's just
+test 100% of what we can :)
