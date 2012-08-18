@@ -5,8 +5,9 @@ This module contains Template classes to aid with rendering out model files
 into a test source directory.
 """
 
-from dpu.utils import rsync, tmpdir, dir_walk, rm, abspath
+from dpu.utils import rsync, tmpdir, dir_walk, rm, abspath, rmdir
 from jinja2 import Template
+import os.path
 
 
 class PlainTemplate(object):
@@ -105,7 +106,9 @@ class DebianShim(PlainTemplate):
         We're actually just going to remove "%s/debian" % (dest), if it exists,
         to make sure we don't have upstream crap futzing with us.
         """
-        pass  # Remove any ./debian directory
+        debdir = "%s/debian" % (dest)
+        if os.path.exists(debdir):
+            rmdir(debdir)
 
 
 # Example:

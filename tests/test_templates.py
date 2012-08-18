@@ -4,8 +4,8 @@
 This module contains tests for the template system.
 """
 
-from dpu.templates import PlainTemplate, JinjaTemplate
-from dpu.utils import tmpdir, cd
+from dpu.templates import PlainTemplate, JinjaTemplate, DebianShim
+from dpu.utils import tmpdir, cd, mkdir
 import os.path
 import os
 
@@ -117,3 +117,47 @@ def test_jinja_template_advanced():
         with cd(tmp):
             for f in files:
                 assert_content(f, files[f])
+
+
+def test_debian_shim_blank():
+    """
+    Ensure the DebianShim won't error when the directory doesn't have a
+    debdir present.
+    """
+    with tmpdir() as tmp:
+        ds = DebianShim()
+        ds.render(tmp)
+
+
+def test_debian_shim_there():
+    """
+    Ensure the shim removes the Debian directory, if it exists, and it can be
+    run over the same thing more then once.
+    """
+    with tmpdir() as tmp:
+        debdir = "%s/debian" % (tmp)
+        mkdir(debdir)
+        assert os.path.exists(debdir)
+        ds = DebianShim()
+        ds.render(tmp)
+        assert not os.path.exists(debdir)
+        ds.render(tmp)
+
+
+def test_debian_shim_there():
+    """
+    Ensure the Debian shim won't remove files other then the Debian/
+    directory.
+    """
+    with tmpdir() as tmp:
+        debdir = "%s/debian" % (tmp)
+        testfd = "%s/foo" % (tmp)
+        mkdir(debdir)
+        open(testfd, 'w').close()
+        assert os.path.exists(debdir)
+        assert os.path.exists(testfd)
+        ds = DebianShim()
+        ds.render(tmp)
+        assert not os.path.exists(debdir)
+        assert os.path.exists(testfd)
+        ds.render(tmp)
