@@ -1,0 +1,13 @@
+{
+    "description": "Verify this and that.",
+    "foo": "kruft",
+    "native": true,
+    "template": "generic",
+    "testname": "test-two",
+    "upstream": [
+        "upstream"
+    ],
+    "version": {
+        "upstream": "1.0"
+    }
+}
