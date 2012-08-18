@@ -72,6 +72,12 @@ to work on dpu, which can be done the follow (inside your virtualenv)
 
     python setup.py develop
 
+This (basically) symlinks the package into the env, so when you change a file,
+you don't have to re-install the stuff.
+
+This has the advantage over using .debs, since you don't have to keep
+re-generating .debs and installing them
+
 Running the system tests
 ------------------------
 
