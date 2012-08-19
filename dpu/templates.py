@@ -131,42 +131,46 @@ class DebianShim(PlainTemplate):
 
 
 class TemplateManager(object):
+    """
+    The TemplateManager handles a series of templates, to be rendered
+    (in order) to another location.
+    """
+
     def __init__(self):
+        """
+        Basic constructor.
+        """
         self._chain = []
 
     def _get_template(self, name):
+        """
+        Internal implementation to handle getting a template.
+        """
         global _templates
         return getattr(_templates, name, None)
 
     def add_real_template(self, template):
+        """
+        If you have a real template, this method is the method for you! Add
+        the template to the processing queue.
+        """
         if template is None:
             raise ValueError("Template is None.")
         self._chain.append(template)
 
     def add_template(self, template_type, *args, **kwargs):
+        """
+        Add a template by name. Depending on the template, the args (past
+        `template_name`) should match the Template class (by the same name)
+        """
         template = self._get_template(template_type)
         if template is None:
             raise ValueError("%s: No such template" % (template_type))
         self.add_real_template(template(*args, **kwargs))
 
     def render(self, dest):
+        """
+        Render out the queue to the directory `dest`.
+        """
         for guy in self._chain:
             guy.render(dest)
-
-# Example:
-#
-# For non-native packages:
-#
-# PlainTemplate(upstream_global)
-# PlainTemplate(test_upstream)
-# UpstreamShim()
-# DebianShim()
-# JinjaTemplate(debian_global)
-# JinjaTemplate(test_debian)
-#
-# For native packages:
-#
-# PlainTemplate(upstream_global)
-# PlainTemplate(test_upstream)
-# JinjaTemplate(debian_global)
-# JinjaTemplate(test_debian)

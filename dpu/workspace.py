@@ -81,6 +81,9 @@ class Test(object):
         return tm
 
     def get_template(self, name):
+        """
+        Get the template by the name of `name`, and return that, or None.
+        """
         path = abspath("%s/%s" % (self._test_path, name))
         ctx = self._context
         if os.path.exists(path):
@@ -89,6 +92,9 @@ class Test(object):
         return None
 
     def _template_search(self, name):
+        """
+        Internal search implementation. There be dragons here.
+        """
         local_search = self.get_template(name)
         if local_search is None:
             templ = self._workspace.get_template(name)
@@ -107,17 +113,26 @@ class Workspace(object):
         self._context = load_config("%s/context.json" % (workspace))
 
     def get_template(self, name):
+        """
+        Get a workspace global template by the name of `name`.
+        """
         path = abspath("%s/templates/%s" % (self._workspace_path, name))
         if os.path.exists(path):
             return JinjaTemplate(path)
         return None
 
     def get_test(self, test):
+        """
+        Get a single test by the name of `test`.
+        """
         fpath = os.path.join(self._test_dir, test)
         tobj = Test(fpath, test, self)
         tobj.set_global_context(self._context)
         return tobj
 
     def tests(self):
+        """
+        Get all the test to be handled
+        """
         for test in os.listdir(self._test_dir):
             yield self.get_test(test)
