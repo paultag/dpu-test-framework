@@ -98,7 +98,7 @@ class UpstreamShim(PlainTemplate):
     def render(self, dest):
         """
         We're actually rendering a tarball out, not files from a model
-        directory. We also expect that `dest' is in pkgname-verson format,
+        directory. We also expect that `dest' is in pkgname-version format,
         ready for taring up.
         """
         dest = abspath("%s/../" % (dest))
