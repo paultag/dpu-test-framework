@@ -99,13 +99,25 @@ def run_builder(binary, path):
     binary = abspath("./builders/%s" % (binary))
     path = abspath(path)
 
+    null = open("/dev/null", "w")
+    stdout = null
+    stderr = null
+
     cmd = [binary, path]
-    subprocess.check_call(cmd, shell=False)
+    subprocess.check_call(cmd,
+                          shell=False,
+                          stdout=stdout,
+                          stderr=stderr)
 
 
 def run_checker(binary, path):
     binary = abspath("./checkers/%s" % (binary))
     path = abspath(path)
 
+    null = open("/dev/null", "w")
+    stderr = null
+
     cmd = [binary, path]
-    subprocess.check_call(cmd, shell=False)
+    output = subprocess.check_output(cmd,
+                                     shell=False,
+                                     stderr=stderr)
