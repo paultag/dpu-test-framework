@@ -96,7 +96,15 @@ def rsync(source, target, excludes=None):
 
 
 def run_builder(binary, path):
-    binary = abspath(binary)
+    binary = abspath("./builders/%s" % (binary))
+    path = abspath(path)
+
+    cmd = [binary, path]
+    subprocess.check_call(cmd, shell=False)
+
+
+def run_checker(binary, path):
+    binary = abspath("./checkers/%s" % (binary))
     path = abspath(path)
 
     cmd = [binary, path]
