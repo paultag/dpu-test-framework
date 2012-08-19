@@ -185,7 +185,7 @@ def test_upstream_shim():
 
 def test_template_voodoo():
     """
-    Make sure this crazy hack is still working
+    Make sure the getattr hack still works right.
     """
     templs = {
         "PlainTemplate": PlainTemplate,
@@ -200,6 +200,9 @@ def test_template_voodoo():
 
 
 def test_template_manager_error():
+    """
+    Make sure that we error out with a bad template.
+    """
     tm = TemplateManager()
     try:
         tm.add_template("foo")
@@ -209,6 +212,9 @@ def test_template_manager_error():
 
 
 def test_template_manager():
+    """
+    Make sure the template manager basics work right.
+    """
     template_dir = abspath("./tests/resources/templates/")
     templs = {
         "plain1": "PlainTemplate",

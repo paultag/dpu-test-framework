@@ -12,6 +12,9 @@ workspace = abspath("./tests/resources/workspace")
 
 
 def test_test_finder():
+    """
+    Make sure we can resolve test folders correctly.
+    """
     tests = os.listdir("%s/tests" % (workspace))
     ws = Workspace(workspace)
     for test in ws.tests():
@@ -20,6 +23,9 @@ def test_test_finder():
 
 
 def test_test_context():
+    """
+    Make sure the context overloader works correctly
+    """
     ws = Workspace(workspace)
     for test in ws.tests():
         assert test._context['foo'] != 'foo'
@@ -27,6 +33,9 @@ def test_test_context():
 
 
 def test_templater():
+    """
+    Make sure we can render out templates correctly
+    """
     ws = Workspace(workspace)
     test = ws.get_test("test-one")
     source, version = test.get_source_and_version()
@@ -37,3 +46,4 @@ def test_templater():
         path = "%s/%s-%s" % (tmp, source, version)
         mkdir(path)
         tm.render(path)
+        # verify path...
