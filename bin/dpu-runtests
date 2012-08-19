@@ -2,9 +2,9 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
-from dpu.workspace import Workspace
+from dpu.suite import TestSuite
 from dpu.utils import mkdir, tmpdir
 
-ws = Workspace(".")
+ws = TestSuite(".")
 for test in ws.tests():
     test.run()

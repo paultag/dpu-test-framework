@@ -4,7 +4,7 @@
 This module tests the workspace system
 """
 
-from dpu.workspace import Workspace
+from dpu.suite import TestSuite
 from dpu.utils import abspath, tmpdir, mkdir
 import os
 
@@ -16,7 +16,7 @@ def test_test_finder():
     Make sure we can resolve test folders correctly.
     """
     tests = os.listdir("%s/tests" % (workspace))
-    ws = Workspace(workspace)
+    ws = TestSuite(workspace)
     for test in ws.tests():
         tests.remove(test.test_id)
     assert tests == []
@@ -26,7 +26,7 @@ def test_crazy_things():
     """
     Make sure we can resolve test folders correctly.
     """
-    ws = Workspace(workspace)
+    ws = TestSuite(workspace)
     test = ws.get_test("test-one")
     assert test._template_search("upstream") is not None
     assert test._template_search("generic") is not None
@@ -37,7 +37,7 @@ def test_test_context():
     """
     Make sure the context overloader works correctly
     """
-    ws = Workspace(workspace)
+    ws = TestSuite(workspace)
     for test in ws.tests():
         assert test._context['foo'] != 'foo'
         assert test._context['bar'] == 'bar'
@@ -47,7 +47,7 @@ def test_run_all_the_things():
     """
     Test all the thingers.
     """
-    ws = Workspace(workspace)
+    ws = TestSuite(workspace)
     for test in ws.tests():
         source, version = test.get_source_and_version()
         version = version['upstream']
@@ -63,7 +63,7 @@ def test_templater():
     """
     Make sure we can render out templates correctly
     """
-    ws = Workspace(workspace)
+    ws = TestSuite(workspace)
     test = ws.get_test("test-one")
     source, version = test.get_source_and_version()
     version = version['upstream']

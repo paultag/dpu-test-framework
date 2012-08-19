@@ -122,7 +122,7 @@ class Test(object):
                 run_checker(checker, path)
 
 
-class Workspace(object):
+class TestSuite(object):
     def __init__(self, workspace):
         """
         The only argument `workspace' is given the root of the test directory.
