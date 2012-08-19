@@ -4,7 +4,7 @@
 This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
-from dpu.utils import load_config, abspath
+from dpu.utils import load_config, abspath, tmpdir, mkdir, run_builder
 import os
 
 
@@ -102,6 +102,18 @@ class Test(object):
                 templ.set_context(self._context)
                 return templ
         return local_search
+
+    def run(self):
+        source, version = self.get_source_and_version()
+        version = version['upstream']
+        tm = self.get_template_stack()
+        with tmpdir() as tmp:
+            path = "%s/%s-%s" % (tmp, source, version)
+            mkdir(path)
+            tm.render(path)
+            for b in self._context['builders']:
+                builder = abspath("./builders/%s" % (b))
+                run_builder(builder, path)
 
 
 class Workspace(object):

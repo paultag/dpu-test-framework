@@ -93,3 +93,11 @@ def rsync(source, target, excludes=None):
     if excludes:
         cmd.extend("--exclude=%s" % x for x in excludes)
     subprocess.check_call(cmd, shell=False)
+
+
+def run_builder(binary, path):
+    binary = abspath(binary)
+    path = abspath(path)
+
+    cmd = [binary, path]
+    subprocess.check_call(cmd, shell=False)
