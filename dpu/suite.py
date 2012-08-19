@@ -6,7 +6,6 @@ This module manages the test workspace, and helps manage the tests.
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import (load_config, abspath, tmpdir,
                        mkdir, run_builder, run_checker)
-import sys
 import os
 
 
