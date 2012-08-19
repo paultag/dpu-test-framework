@@ -5,6 +5,7 @@ This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import load_config, abspath, tmpdir, mkdir, run_builder
+import sys
 import os
 
 
@@ -67,7 +68,7 @@ class Test(object):
             tm.add_real_template(root_template)
 
         for template in upstream:
-            tm.add_real_template(self.get_template(template))
+            tm.add_real_template(self._template_search(template))
 
         if not native:
             tm.add_template("UpstreamShim", pkgname, version)
@@ -76,7 +77,7 @@ class Test(object):
             debian = ctx['debian']
 
         for template in debian:
-            tm.add_real_template(self.get_template(template))
+            tm.add_real_template(self._template_search(template))
 
         return tm
 
@@ -114,6 +115,9 @@ class Test(object):
             for b in self._context['builders']:
                 builder = abspath("./builders/%s" % (b))
                 run_builder(builder, path)
+                # print tmp
+                # print "Waiting for user"
+                # sys.stdin.readlines()
 
 
 class Workspace(object):

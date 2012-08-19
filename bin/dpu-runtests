@@ -8,4 +8,3 @@ from dpu.utils import mkdir, tmpdir
 ws = Workspace(".")
 for test in ws.tests():
     test.run()
-
