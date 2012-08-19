@@ -26,6 +26,16 @@ def assert_content(path, content):
     assert content == content_obj
 
 
+def test_jinja2_context():
+    tpl = JinjaTemplate("tests/resources/templates/jinja1")
+    with tmpdir() as tmp:
+        try:
+            tpl.render(tmp)
+            assert True is False
+        except ValueError:
+            pass
+
+
 def test_plain_template_basic():
     """
     Ensure basic sanity with the PlainTemplate system.
@@ -236,3 +246,15 @@ def test_template_manager():
                               **kwargs)
 
         tplm.render(tmp)
+
+
+def test_real_template_thing():
+    """
+    Make sure None templates throw errors
+    """
+    tm = TemplateManager()
+    try:
+        tm.add_real_template(None)
+        assert True is False
+    except ValueError:
+        pass

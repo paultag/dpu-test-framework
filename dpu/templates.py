@@ -57,7 +57,6 @@ class JinjaTemplate(PlainTemplate):
         dest = abspath(dest)
 
         if self.context is None:
-            print self._template_path
             raise ValueError("No context set for this JinjaTemplate")
 
         with tmpdir() as tmp:

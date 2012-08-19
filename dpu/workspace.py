@@ -98,8 +98,9 @@ class Test(object):
         local_search = self.get_template(name)
         if local_search is None:
             templ = self._workspace.get_template(name)
-            templ.set_context(self._context)
-            return templ
+            if templ is not None:
+                templ.set_context(self._context)
+                return templ
         return local_search
 
 

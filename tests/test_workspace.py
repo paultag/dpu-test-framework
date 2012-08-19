@@ -22,6 +22,17 @@ def test_test_finder():
     assert tests == []
 
 
+def test_crazy_things():
+    """
+    Make sure we can resolve test folders correctly.
+    """
+    ws = Workspace(workspace)
+    test = ws.get_test("test-one")
+    assert test._template_search("upstream") is not None
+    assert test._template_search("generic") is not None
+    assert test._template_search("kruft") is None
+
+
 def test_test_context():
     """
     Make sure the context overloader works correctly
@@ -30,6 +41,22 @@ def test_test_context():
     for test in ws.tests():
         assert test._context['foo'] != 'foo'
         assert test._context['bar'] == 'bar'
+
+
+def test_run_all_the_things():
+    """
+    Test all the thingers.
+    """
+    ws = Workspace(workspace)
+    for test in ws.tests():
+        source, version = test.get_source_and_version()
+        version = version['upstream']
+
+        tm = test.get_template_stack()
+        with tmpdir() as tmp:
+            path = "%s/%s-%s" % (tmp, source, version)
+            mkdir(path)
+            tm.render(path)
 
 
 def test_templater():
