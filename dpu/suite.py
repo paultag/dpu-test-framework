@@ -57,28 +57,19 @@ class Test(object):
         ctx = self._context
         tm = TemplateManager()
         native = ctx['native']
-        root_template = self._template_search(ctx['template'])
-        debian = []
-        upstream = ctx['upstream']
-
         pkgname, version = self.get_source_and_version()
         version = version['upstream']
 
-        if native:
-            tm.add_real_template(root_template)
-
-        for template in upstream:
-            tm.add_real_template(self._template_search(template))
-
-        if not native:
-            tm.add_template("UpstreamShim", pkgname, version)
-            tm.add_template("DebianShim")
-            tm.add_real_template(root_template)
-            debian = ctx['debian']
-
-        for template in debian:
-            tm.add_real_template(self._template_search(template))
-
+        for template in ctx['templates']:
+            if template == "shim:upstream":  # XXX: Better handling here.
+                tm.add_template("UpstreamShim", pkgname, version)
+                tm.add_template("DebianShim")
+            else:
+                tobj = self._template_search(template)
+                if tobj is None:
+                    raise KeyError("Can't find template %s" % (
+                        template))  # XXX: Not such a stupid exception here.
+                tm.add_real_template(tobj)
         return tm
 
     def get_template(self, name):

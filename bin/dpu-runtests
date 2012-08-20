@@ -28,7 +28,7 @@ class LockedIterator(object):
 
 ws = TestSuite(".")
 tests = LockedIterator(ws.tests())
-t_count = 8
+t_count = 1
 threads = []
 
 class TestJob(threading.Thread):

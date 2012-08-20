@@ -1,0 +1,2 @@
+bin/*                       usr/bin
+templates/*                 usr/share/dpu/templates
