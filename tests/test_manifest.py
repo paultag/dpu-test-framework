@@ -5,7 +5,7 @@ import os
 import tarfile
 
 from dpu.manifest import parse_manifest
-from dpu.util import disposabledir
+from dpu.utils import tmpdir
 from dpu.tarball import open_compressed_tarball
 
 
@@ -15,10 +15,9 @@ rundir = "./tests/staging/"
 
 def test_manifest():
     testname = "manifest-tarball"
-    staging = os.path.join(rundir, testname)
     test_res = os.path.join(resources, testname)
     man = parse_manifest(os.path.join(test_res, "manifest"))
-    with disposabledir(staging):
+    with tmpdir() as staging:
         tname = os.path.join(staging, "test.tar.gz")
         tf = tarfile.open(tname, mode="w:gz")
         tf.add(os.path.join(test_res, "root"),
