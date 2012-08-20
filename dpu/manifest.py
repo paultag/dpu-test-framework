@@ -1,13 +1,21 @@
+# Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
+# license.
+
+from functools import partial
+
+
 def __get_edata(entry, data):
     if entry not in data:
         data[entry] = {}
     return data[entry]
+
 
 def __is_present(entry, edata, present=True):
     if "present" in edata and edata["present"] != present:
         raise IOError("%s cannot be present and not-present at the same time" %
                       (entry))
     edata["present"] = present
+
 
 def __is_file_type(entry, edata, etype):
     __is_present(entry, edata)
@@ -17,6 +25,7 @@ def __is_file_type(entry, edata, etype):
                           (entry, etype, edata["entry-type"]))
     else:
         edata["entry-type"] = etype
+
 
 def __parse_link_target(data, cmd, last, arg):
     entry = last
@@ -38,6 +47,7 @@ def __parse_link_target(data, cmd, last, arg):
     edata["link-target"] = target
     return entry
 
+
 def __parse_not_present(data, cmd, last, arg):
     if not arg or len(arg.split(None, 1)) != 1:
         raise IOError("%s takes exactly one argument" % cmd)
@@ -45,6 +55,7 @@ def __parse_not_present(data, cmd, last, arg):
     edata = __get_edata(entry, data)
     __is_present(entry, edata, False)
     return None
+
 
 def __parse_contains_X(data, cmd, last, arg):
     etype = cmd.replace("contains-", "", 1)
@@ -55,25 +66,27 @@ def __parse_contains_X(data, cmd, last, arg):
     __is_file_type(entry, edata, etype)
     return entry
 
+
 def __not_implemented(data, cmd, last, arg):
     raise NotImplementedError("%s is not implemented" % cmd)
 
-COMMANDS={
+COMMANDS = {
     "contains-file": __parse_contains_X,
     "contains-dir": __parse_contains_X,
     "contains-symlink": __parse_contains_X,
-    "not-present":__parse_not_present,
-    "link-target":__parse_link_target,
+    "not-present": __parse_not_present,
+    "link-target": __parse_link_target,
 
-    "contains-entry":__not_implemented,
-    "same-content":__not_implemented,
-    "perm":__not_implemented,
-    "hardlinks":__not_implemented,
+    "contains-entry": __not_implemented,
+    "same-content": __not_implemented,
+    "perm": __not_implemented,
+    "hardlinks": __not_implemented,
 }
 
-ENTRY_TYPE_FILE="file"
-ENTRY_TYPE_DIR="dir"
-ENTRY_TYPE_SYMLINK="symlink"
+ENTRY_TYPE_FILE = "file"
+ENTRY_TYPE_DIR = "dir"
+ENTRY_TYPE_SYMLINK = "symlink"
+
 
 def parse_manifest(fname):
     data = {}
@@ -90,10 +103,10 @@ def parse_manifest(fname):
             last = COMMANDS[spl[0]](data, spl[0], last, spl[1])
     return Manifest(data)
 
+
 class Manifest(object):
     def __init__(self, data):
         self._data = data
-
 
     def check_tarball(self, tar):
         data = self._data
@@ -111,7 +124,7 @@ class Manifest(object):
     def check_apt_tarball(self, tar):
         data = self._data
         missing = set(x for x in data if data[x]["present"])
-        tar.go(parial(self.__apt_visit_tarball, missing))
+        tar.go(partial(self.__apt_visit_tarball, missing))
         if missing:
             first = sorted(missing)[0]
             raise AssertionError("Missing %s" % first)
@@ -131,7 +144,7 @@ class Manifest(object):
         if normtname[0] != "/":
             # technically incorrect with ../ or ./../ stuff, but a real tarball
             # won't have that.
-            normtname = normtname.lstrip("./")        
+            normtname = normtname.lstrip("./")
         return normtname
 
     def __check_tar_entry(self, mentry, normtname, tarmember):
@@ -140,31 +153,36 @@ class Manifest(object):
             # We have no information on it
             return
         if not mentry["present"]:
-            raise AssertionError("%s is not supposed to be present" % normtname)
+            raise AssertionError("%s is not supposed to be present" % (
+                normtname))
 
         if "entry-type" in mentry:
             etype = mentry["entry-type"]
             ok = False
             if etype == ENTRY_TYPE_FILE:
-                ok = tarmember.isfile() or tarmember.islnk() 
+                ok = tarmember.isfile() or tarmember.islnk()
             elif etype == ENTRY_TYPE_DIR:
                 ok = tarmember.isdir()
             elif etype == ENTRY_TYPE_SYMLINK:
                 ok = tarmember.issym()
             else:
                 # XXX handle devices/sockets
-                raise AssertionError("%s is present, but not a known type!? (expected: %s)"
-                                     % (normtname, etype))
-            if not ok:                    
-                raise AssertionError("%s is present but not a %s" % (normtname, etype))
+                raise AssertionError(
+                    "%s is present, but not a known type!? (expected: %s)" % (
+                        normtname, etype))
+            if not ok:
+                raise AssertionError("%s is present but not a %s" % (
+                    normtname, etype))
 
         if "link-target" in mentry:
             assert tarmember.issym()
             if mentry["link-target"] != tarmember.linkname:
-                raise AssertionError("%s is a symlink, but points to %s intead of %s" % \
-                                         (normtname, tarmember.linkname, mentry["link-target"]))
+                raise AssertionError(
+                    "%s is a symlink, but points to %s intead of %s" % (
+                        normtname, tarmember.linkname, mentry["link-target"]))
         if "perm" in mentry:
             assert not tarmember.issym()
             if mentry["perm"] != tarmember.mode:
-                raise AssertionError("%s is mode 0%o instead of 0%o" %
-                                     (normtname, mentry["perm"], tarmember.mode))
+                raise AssertionError("%s is mode 0%o instead of 0%o" % (
+                                         normtname, mentry["perm"],
+                                         tarmember.mode))

@@ -122,7 +122,9 @@ def run_checker(binary, path):
                                      shell=False,
                                      stderr=stderr)
 
-def is_identical_with_diff(from_file, to_file, from_data=None, to_data=None, output_fd=None):
+
+def is_identical_with_diff(from_file, to_file,
+                           from_data=None, to_data=None, output_fd=None):
     """Make a unified diff between from_file and to_file
 
     If from_data is given, the contents of from_file is assumed to be
@@ -141,8 +143,8 @@ def is_identical_with_diff(from_file, to_file, from_data=None, to_data=None, out
     # vomit binary data to stdout and "I" am too lazy to re-implement
     # the "is-binary" check.
 
-    from_label=from_file
-    to_label=to_file
+    from_label = from_file
+    to_label = to_file
     data = None
     pstdin = None
     if from_data is not None and to_data is not None:

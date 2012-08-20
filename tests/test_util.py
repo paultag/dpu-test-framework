@@ -11,6 +11,7 @@ from dpu.utils import (dir_walk, mkdir, tmpdir, cd,
 
 resources = "./tests/resources/"
 
+
 def touch(fd):
     open(fd, 'a').close()
 
@@ -78,6 +79,7 @@ def test_more_walk():
         assert valid_targets == []
         assert invalid_targets == invalid_cmp
 
+
 def test_is_identical_with_diff():
     """
     Ensure is_identical_with_diff works
@@ -89,27 +91,37 @@ def test_is_identical_with_diff():
         assert is_identical_with_diff(diff_orig, diff_orig, output_fd=null_fd)
         assert is_identical_with_diff(diff_newf, diff_newf, output_fd=null_fd)
         # The two files are different
-        assert not is_identical_with_diff(diff_orig, diff_newf, output_fd=null_fd)
-        assert not is_identical_with_diff(diff_newf, diff_orig, output_fd=null_fd)
+        assert not is_identical_with_diff(diff_orig, diff_newf,
+                                          output_fd=null_fd)
+
+        assert not is_identical_with_diff(diff_newf, diff_orig,
+                                          output_fd=null_fd)
 
         with open(diff_orig) as orig_fd:
             orig_data = orig_fd.read()
-            # The files appear to be identical if we lie about diff_newf's content
-            assert is_identical_with_diff(diff_orig, diff_newf, to_data=orig_data,
-                                          output_fd=null_fd)
-            assert is_identical_with_diff(diff_newf, diff_orig, from_data=orig_data,
+            # The files appear to be identical if we lie about diff_newf's
+            # content
+            assert is_identical_with_diff(diff_orig, diff_newf,
+                                          to_data=orig_data, output_fd=null_fd)
+            assert is_identical_with_diff(diff_newf, diff_orig,
+                                          from_data=orig_data,
                                           output_fd=null_fd)
 
         with open(diff_newf) as newf_fd:
             newf_data = newf_fd.read()
-            # The files appear to be identical if we lie about diff_orig's content
-            assert is_identical_with_diff(diff_orig, diff_newf, from_data=newf_data,
+            # The files appear to be identical if we lie about diff_orig's
+            # content
+            assert is_identical_with_diff(diff_orig, diff_newf,
+                                          from_data=newf_data,
                                           output_fd=null_fd)
-            assert is_identical_with_diff(diff_newf, diff_orig, to_data=newf_data,
+
+            assert is_identical_with_diff(diff_newf, diff_orig,
+                                          to_data=newf_data,
                                           output_fd=null_fd)
 
         try:
-            is_identical_with_diff(diff_orig, diff_newf, from_data='', to_data='', output_fd=null_fd)
+            is_identical_with_diff(diff_orig, diff_newf, from_data='',
+                                   to_data='', output_fd=null_fd)
             assert False
         except ValueError:
             pass
