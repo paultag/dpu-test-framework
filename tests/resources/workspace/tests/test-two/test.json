@@ -2,11 +2,12 @@
     "description": "Verify this and that.",
     "foo": "kruft",
     "native": true,
-    "template": "generic",
-    "testname": "test-two",
-    "upstream": [
-        "upstream"
+    "templates": [
+        "upstream",
+        "shim:upstream",
+        "generic"
     ],
+    "testname": "test-two",
     "version": {
         "upstream": "1.0"
     }
