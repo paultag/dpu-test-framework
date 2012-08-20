@@ -62,6 +62,8 @@ class Test(object):
 
         for template in ctx['templates']:
             if template == "shim:upstream":  # XXX: Better handling here.
+                if native:
+                    raise KeyError("Native thinger calling upstream")
                 tm.add_template("UpstreamShim", pkgname, version)
                 tm.add_template("DebianShim")
             else:
