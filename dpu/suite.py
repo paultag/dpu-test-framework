@@ -31,7 +31,7 @@ class Test(object):
         Re-set the global context (or rather, set the context to this, updated
         with the current context).
         """
-        cfg = config
+        cfg = config.copy()
         cfg.update(self._context)
         self._context = cfg
         self._update_context()
