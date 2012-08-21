@@ -1,1 +1,1 @@
-{{source.format}}{% if source.variant %} ({{source.variant}}){% endif %}
+{{format.version}}{% if format.variant %} ({{format.variant}}){% endif %}

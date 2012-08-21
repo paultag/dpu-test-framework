@@ -127,9 +127,16 @@ class TestSuite(object):
         """
         Get a workspace global template by the name of `name`.
         """
+        # XXX: throw together some logic here
+
         path = abspath("%s/templates/%s" % (self._workspace_path, name))
         if os.path.exists(path):
             return JinjaTemplate(path)
+
+        path = abspath("/usr/share/dpu/templates/%s" % (name))
+        if os.path.exists(path):
+            return JinjaTemplate(path)
+
         return None
 
     def get_test(self, test):
