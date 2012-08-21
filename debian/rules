@@ -8,12 +8,6 @@ override_dh_auto_install:
 	rm -vf ./debian/dpu-test-framework/usr/lib/*/dist-packages/dpu*egg-info/SOURCES.txt
 
 override_dh_auto_test:
-	# It should be noted that we SHOULD be testing against all python versions,
-	# but we use filter=<foo> in the tarfile.add call, which was added in
-	# Python 2.7.
-	#
-	# For now, we'll just do the basic tests.
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
-		nosetests; \
-	done
+		nosetests;
 endif
