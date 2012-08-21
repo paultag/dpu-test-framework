@@ -21,7 +21,8 @@ def test_manifest():
         tname = os.path.join(staging, "test.tar.gz")
         tf = tarfile.open(tname, mode="w:gz")
         tf.add(os.path.join(test_res, "root"),
-               arcname=".", filter=__tar_filter)
+               arcname=".", filter=__tar_filter)  # XXX: Refactor (out?) filter
+                                                  #  for python 2.6. - PRT
         tf.close()
         with open_compressed_tarball(tname) as tar:
             man.check_tarball(tar)
