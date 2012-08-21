@@ -129,6 +129,7 @@ def run_checker(biny, path):
             output = subprocess.check_output(cmd,
                                              shell=False,
                                              stderr=stderr)
+            print output
             return
     raise Exception("No such builder: %s" % (biny))
 
