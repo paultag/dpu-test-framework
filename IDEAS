@@ -1,8 +1,9 @@
+Ideas
+-----
+
 This document contains various ideas for features/design for the
 Debian Package Utility test framework and also open ideas.
 
- * Template support [L]
-   (see "Templates" section below)
  * Hooks [L]
    (Lintian hooks listed below)
    - pre_upstream (for non-native pkg only)
@@ -27,14 +28,7 @@ Debian Package Utility test framework and also open ideas.
  * Support for "per test command line options" [L]
    (example: Lintian's test suite uses this to pass --pedantic or
     --profile options to Lintian)
- * Support "test suite" defaults
-   - Some tools (e.g. Lintian) processes the end result.  Test suites for
-     these will probably need to run this tool in all tests, so it might
-     make sense to add a "Suite default for option X" setting.
  * Support "project" specific "plugins" on a "suite" or "test" level.
- * Parallization support
-   - Lintian's has over 340 tests; running them in serial takes ages...
-     (read: over 30 minutes).
  * Selection of test to run
    - Allow a single test to be run
    - Allow any test based on a filter (e.g. by name, by some "marker" etc.)
@@ -73,6 +67,19 @@ Debian Package Utility test framework and also open ideas.
    - Be able to run a template over all dh compat levels (or rather, for a
      given range) to aid in testing a check works for all "supported" dh
      versions.
+
+Implemented
+-----------
+
+ * Template support [L]
+   (see "Templates" section below)
+ * Support "test suite" defaults
+   - Some tools (e.g. Lintian) processes the end result.  Test suites for
+     these will probably need to run this tool in all tests, so it might
+     make sense to add a "Suite default for option X" setting.
+ * Parallization support
+   - Lintian's has over 340 tests; running them in serial takes ages...
+     (read: over 30 minutes).
 
 Legend:
  * [L] - Lintian's test suite has this feature (or something closely related).
