@@ -3,8 +3,9 @@
     "foo": "bar",
     "native": false,
     "templates": [
-        "generic",
         "upstream",
+        "shim:upstream",
+        "generic",
         "debian"
     ],
     "testname": "test-one"

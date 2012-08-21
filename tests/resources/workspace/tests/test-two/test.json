@@ -4,7 +4,6 @@
     "native": true,
     "templates": [
         "upstream",
-        "shim:upstream",
         "generic"
     ],
     "testname": "test-two",

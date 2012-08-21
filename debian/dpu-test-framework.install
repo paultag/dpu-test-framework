@@ -1,2 +1,4 @@
-bin/*                       usr/bin
-templates/*                 usr/share/dpu/templates
+bin/*                       usr/bin/
+templates/*                 usr/share/dpu/templates/
+builders/*                  usr/lib/dpu/builders/
+checkers/*                  usr/lib/dpu/checkers/

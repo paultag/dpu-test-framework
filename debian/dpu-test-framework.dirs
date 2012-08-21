@@ -1,0 +1,4 @@
+usr/bin/
+usr/share/dpu/templates/
+usr/lib/dpu/builders/
+usr/lib/dpu/checkers/
