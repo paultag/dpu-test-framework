@@ -98,6 +98,9 @@ class Test(object):
         return local_search
 
     def run(self):
+        if "todo" in self._context:
+            return "todo"
+
         source, version = self.get_source_and_version()
         version = version['upstream']
         tm = self.get_template_stack()
