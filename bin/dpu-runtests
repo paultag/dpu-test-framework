@@ -6,6 +6,7 @@ import sys
 import time
 import thread
 import threading
+import multiprocessing
 
 from dpu.suite import TestSuite
 from dpu.utils import mkdir, tmpdir
@@ -31,8 +32,9 @@ if len(sys.argv) > 1:
     tsdir = sys.argv[1]
 ws = TestSuite(tsdir)
 tests = LockedIterator(ws.tests())
-t_count = 8
-t_count = 1
+cpu_count = multiprocessing.cpu_count()
+
+t_count = (cpu_count * 2)
 threads = []
 
 class TestJob(threading.Thread):
@@ -43,8 +45,8 @@ class TestJob(threading.Thread):
     def run(self):
         for test in self.iterator:
             print "%s: Running test -- %s" % (self.name, test.name)
-            test.run()
-            print "%s: Ran test     -- %s" % (self.name, test.name)
+            val = test.run()
+            print "%s: Ran test     -- %s (%s)" % (self.name, test.name, val)
 
 
 for guy in range(0, t_count):
