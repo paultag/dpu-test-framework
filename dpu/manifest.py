@@ -148,9 +148,9 @@ class Manifest(object):
         return normtname
 
     def __check_tar_entry(self, mentry, normtname, tarmember):
-        if not mentry or "present" not in mentry:
-            # We have no information on it
-            return
+        assert mentry is not None
+        assert "present" in mentry
+
         if not mentry["present"]:
             raise EntryNotPresentAssertionError(normtname)
 

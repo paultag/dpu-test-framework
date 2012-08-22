@@ -3,7 +3,6 @@
 
 import os
 import tarfile
-from tarfile import DIRTYPE
 
 from dpu.manifest import parse_manifest
 from dpu.manifestex import *
@@ -26,7 +25,7 @@ def check_tarball(resdir, tfilter=None, rootmod=None):
             newroot = os.path.join(staging, "root")
             rsync(tarroot, newroot)
             tarroot = newroot
-            _alter_root_break_type(tarroot)
+            rootmod(tarroot)
         tname = os.path.join(staging, "test.tar.gz")
         tf = tarfile.open(tname, mode="w:gz")
         tf.add(tarroot, arcname=".", filter=tfilter)
@@ -62,10 +61,25 @@ def _break_mode(tarinfo):
     return t
 
 
+def _break_present(tarinfo):
+    t = _tar_filter(tarinfo)
+    if t.name == "usr/share/doc/foo/copyright":
+        return None
+    return t
+
+
 def _alter_root_break_type(rootdir):
     cpyf = os.path.join(rootdir, "usr/share/doc/foo/copyright")
     rm(cpyf)
     mkdir(cpyf)
+
+
+def _alter_root_add_unexpected_file(rootdir):
+    d = os.path.join(rootdir, "usr/random")
+    mkdir(d)
+    f = os.path.join(d, "place")
+    with open(f, "w") as fd:
+        fd.write("Not supposed to bere!")
 
 
 def test_manifest():
@@ -107,5 +121,25 @@ def test_manifest_bad_type():
         assert e.entry == "usr/share/doc/foo/copyright"
         assert e.expected == "file"
         assert e.actual is None or e.actual == "dir"
+    except ManifestCheckError as e:
+        raise AssertionError("Unexpected check failure %s" % str(e))
+
+
+def test_manifest_unexpected_file():
+    try:
+        check_tarball("manifest-tarball", rootmod=_alter_root_add_unexpected_file)
+        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+    except EntryNotPresentAssertionError as e:
+        assert e.entry == "usr/random/place"
+    except ManifestCheckError as e:
+        raise AssertionError("Unexpected check failure %s" % str(e))
+
+
+def test_manifest_missing_file():
+    try:
+        check_tarball("manifest-tarball", tfilter=_break_present)
+        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+    except EntryPresentAssertionError as e:
+        assert e.entry == "usr/share/doc/foo/copyright"
     except ManifestCheckError as e:
         raise AssertionError("Unexpected check failure %s" % str(e))

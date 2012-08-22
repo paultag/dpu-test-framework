@@ -23,7 +23,7 @@ class EntryNotPresentAssertionError(ManifestCheckError):
 
 class EntryWrongTypeAssertionError(ManifestCheckError):
     def __repr__(self):
-        if self.atype is not None:
+        if self.actual is not None:
             return "Entry %s is supposed to be a %s but is a %s"  % (
                 self.entry, self.expected, self.actual)
         return "Entry %s is present but not as %s" % (

@@ -1,3 +1,5 @@
+# Comment lines start with "#" and are ignored till end of line
+
 contains-dir usr/share/doc/foo
 contains-file usr/share/doc/foo/copyright
 contains-symlink usr/share/doc/foo/symlink-source
