@@ -1,18 +1,17 @@
 {
+    "foo": "baz",
     "builders": [
         "binary"
     ],
     "checkers": [
         "lintian"
     ],
-    "description": "Verify this and that.",
-    "foo": "bar",
+    "description": "Test an empty Debian diff",
     "native": false,
     "templates": [
-        "upstream",
+        "hello",
         "shim:upstream",
-        "generic",
-        "debian"
+        "generic"
     ],
-    "testname": "test-one"
+    "testname": "hello-has-no-manpage"
 }

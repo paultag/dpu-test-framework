@@ -1,0 +1,21 @@
+{
+    "foo": "baz",
+    "builders": [
+        "source"
+    ],
+    "checkers": [
+        "lintian-pedantic"
+    ],
+    "description": "Test an empty Debian diff",
+    "format": {
+        "version": "1.0"
+    },
+    "native": false,
+    "templates": [
+        "generic",
+        "shim:upstream",
+        "generic"
+    ],
+    "testname": "cruft-empty-diff",
+    "todo": "Not implemented yet"
+}
