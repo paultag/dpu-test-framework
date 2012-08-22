@@ -127,10 +127,12 @@ class Test(object):
                 if os.path.exists(pristine):
                     # OK, let's verify
                     if os.path.exists(output):
-                        if is_identical_with_diff(pristine, output):
-                            results[checker] = "passed"
-                        else:
-                            results[checker] = "failed"
+                        with open("/dev/null", "w") as null:
+                            if is_identical_with_diff(pristine, output,
+                                                      output_fd=null):
+                                results[checker] = "passed"
+                            else:
+                                results[checker] = "failed"
                     else:
                         results[checker] = "no-output"
                 else:
