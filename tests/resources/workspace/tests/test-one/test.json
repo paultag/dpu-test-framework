@@ -1,4 +1,10 @@
 {
+    "builders": [
+        "binary"
+    ],
+    "checkers": [
+        "lintian"
+    ],
     "description": "Verify this and that.",
     "foo": "bar",
     "native": false,

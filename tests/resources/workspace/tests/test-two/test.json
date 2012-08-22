@@ -1,4 +1,10 @@
 {
+    "builders": [
+        "source"
+    ],
+    "checkers": [
+        "lintian"
+    ],
     "description": "Verify this and that.",
     "foo": "kruft",
     "native": true,

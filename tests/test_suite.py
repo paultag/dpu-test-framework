@@ -59,6 +59,15 @@ def test_run_all_the_things():
             tm.render(path)
 
 
+def test_run_tests():
+    """
+    Test all the thingers.
+    """
+    ws = TestSuite(workspace)
+    for test in ws.tests():
+        test.run()
+
+
 def test_templater():
     """
     Make sure we can render out templates correctly
