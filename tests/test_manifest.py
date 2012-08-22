@@ -99,9 +99,6 @@ def test_manifest_bad_symlink():
 
 
 def test_manifest_bad_mode():
-    # TODO: perm not implemented yet
-    if 1 == 1:
-        return
     try:
         check_tarball("manifest-tarball", tfilter=_break_mode)
         raise AssertionError("Bad mojo! Method is not supposed to return normally")

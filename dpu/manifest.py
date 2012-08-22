@@ -4,10 +4,26 @@
 from functools import partial
 from manifestex import *
 
+ENTRY_TYPE_FILE = "file"
+ENTRY_TYPE_DIR = "dir"
+ENTRY_TYPE_SYMLINK = "symlink"
+
 def __get_edata(entry, data):
     if entry not in data:
         data[entry] = {}
     return data[entry]
+
+
+def _split_usergroup(value):
+    user, group, re = value.split(":", 2)
+    if re:
+        raise IOError('Too many colons in "user:group" argument')
+    if not group:
+        # allow "/" as separator (because tar uses it in tar -vt)
+        user, group, re = value.split("/", 2)
+        if re:
+            raise IOError('user and group must be separated with ":" if they contain "/"')
+    return (user, group)
 
 
 def __is_present(entry, edata, present=True):
@@ -26,6 +42,8 @@ def __is_file_type(entry, edata, etype):
     else:
         edata["entry-type"] = etype
 
+    if etype == ENTRY_TYPE_SYMLINK and "perm" in edata:
+        raise IOError("%s is expected to be a symlink, but has perm information")
 
 def __parse_link_target(data, cmd, last, arg):
     entry = last
@@ -66,6 +84,42 @@ def __parse_contains_X(data, cmd, last, arg):
     __is_file_type(entry, edata, etype)
     return entry
 
+def _parse_perm(data, cmd, last, arg):
+    entry = None
+    mode = None
+    user = None
+    group = None
+    if arg:
+        args = arg.split(None, 4)
+        if len(args) > 0 and len(args) < 4:
+            mode = int(args[0], 8)
+            entry = last
+            if len(args) > 1:
+                user, group = _split_usergroup(args[1])
+            if len(args) == 3:
+                entry = args[2]
+
+    if entry is None:
+        raise IOError("%s takes at least one and at most three arguments" % (cmd))
+
+    edata = __get_edata(entry, data)
+    __is_present(entry, edata)
+
+    if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
+        raise IOError("%s cannot be applied to symlink entry" % entry)
+
+    if "perm" in edata and edata["perm"] != mode:
+        raise IOError("Conflicting perm mode for %s" % entry)
+    edata["perm"] = mode
+
+    if user is not None:
+        # TODO:
+        # Problem here is that python-apt's "TarMember" does not expose
+        # the user/group, only uid/gid
+        raise NotImplementedError("user:group setting not implemented")
+
+    return entry
+
 
 def __not_implemented(data, cmd, last, arg):
     raise NotImplementedError("%s is not implemented" % cmd)
@@ -76,16 +130,12 @@ COMMANDS = {
     "contains-symlink": __parse_contains_X,
     "not-present": __parse_not_present,
     "link-target": __parse_link_target,
+    "perm": _parse_perm,
 
     "contains-entry": __not_implemented,
     "same-content": __not_implemented,
-    "perm": __not_implemented,
     "hardlinks": __not_implemented,
 }
-
-ENTRY_TYPE_FILE = "file"
-ENTRY_TYPE_DIR = "dir"
-ENTRY_TYPE_SYMLINK = "symlink"
 
 
 def parse_manifest(fname):

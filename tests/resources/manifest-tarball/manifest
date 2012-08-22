@@ -2,6 +2,8 @@
 
 contains-dir usr/share/doc/foo
 contains-file usr/share/doc/foo/copyright
+perm 0644
+
 contains-symlink usr/share/doc/foo/symlink-source
 link-target symlink-target
 

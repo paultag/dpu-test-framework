@@ -59,6 +59,8 @@ link-target ltarget [entry]
 # Asserts that entry is present, has permission operm (octal only),
 # its owning user is named ouser and its owning group is ogroup.
 #
+# Cannot be used on symlink entries.
+#
 # FIXME: owner:group of source tarballs are not standardized.
 perm operm [ouser:ogroup [entry]]
 
