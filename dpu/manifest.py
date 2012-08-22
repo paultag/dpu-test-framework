@@ -9,7 +9,7 @@ ENTRY_TYPE_DIR = "dir"
 ENTRY_TYPE_SYMLINK = "symlink"
 
 
-def __get_edata(entry, data):
+def _get_edata(entry, data):
     if entry not in data:
         data[entry] = {}
     return data[entry]
@@ -28,15 +28,15 @@ def _split_usergroup(value):
     return (user, group)
 
 
-def __is_present(entry, edata, present=True):
+def _is_present(entry, edata, present=True):
     if "present" in edata and edata["present"] != present:
         raise IOError("%s cannot be present and not-present at the same time" %
                       (entry))
     edata["present"] = present
 
 
-def __is_file_type(entry, edata, etype):
-    __is_present(entry, edata)
+def _is_file_type(entry, edata, etype):
+    _is_present(entry, edata)
     if "entry-type" in edata:
         if edata["entry-type"] != etype:
             raise IOError("%s cannot be a %s and %s at the same time" %
@@ -51,7 +51,7 @@ def __is_file_type(entry, edata, etype):
             ))
 
 
-def __parse_link_target(data, cmd, last, arg):
+def _parse_link_target(data, cmd, last, arg):
     entry = last
     target = None
     if arg:
@@ -63,8 +63,8 @@ def __parse_link_target(data, cmd, last, arg):
     if target is None:
         raise IOError("%s takes either one or two arguments" % (cmd))
 
-    edata = __get_edata(entry, data)
-    __is_file_type(entry, edata, ENTRY_TYPE_SYMLINK)
+    edata = _get_edata(entry, data)
+    _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK)
     if "link-target" in edata and edata["link-target"] != target:
         raise IOError("%s cannot point to %s and %s at the same time" %
                       (entry, target, edata["link-target"]))
@@ -72,22 +72,22 @@ def __parse_link_target(data, cmd, last, arg):
     return entry
 
 
-def __parse_not_present(data, cmd, last, arg):
+def _parse_not_present(data, cmd, last, arg):
     if not arg or len(arg.split(None, 1)) != 1:
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
-    edata = __get_edata(entry, data)
-    __is_present(entry, edata, False)
+    edata = _get_edata(entry, data)
+    _is_present(entry, edata, False)
     return None
 
 
-def __parse_contains_X(data, cmd, last, arg):
+def _parse_contains_X(data, cmd, last, arg):
     etype = cmd.replace("contains-", "", 1)
     if not arg or len(arg.split(None, 1)) != 1:
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
-    edata = __get_edata(entry, data)
-    __is_file_type(entry, edata, etype)
+    edata = _get_edata(entry, data)
+    _is_file_type(entry, edata, etype)
     return entry
 
 
@@ -110,8 +110,8 @@ def _parse_perm(data, cmd, last, arg):
         raise IOError("%s takes at least one and at most three arguments" % (
             cmd))
 
-    edata = __get_edata(entry, data)
-    __is_present(entry, edata)
+    edata = _get_edata(entry, data)
+    _is_present(entry, edata)
 
     if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
         raise IOError("%s cannot be applied to symlink entry" % entry)
@@ -129,20 +129,20 @@ def _parse_perm(data, cmd, last, arg):
     return entry
 
 
-def __not_implemented(data, cmd, last, arg):
+def _not_implemented(data, cmd, last, arg):
     raise NotImplementedError("%s is not implemented" % cmd)
 
 COMMANDS = {
-    "contains-file": __parse_contains_X,
-    "contains-dir": __parse_contains_X,
-    "contains-symlink": __parse_contains_X,
-    "not-present": __parse_not_present,
-    "link-target": __parse_link_target,
+    "contains-file": _parse_contains_X,
+    "contains-dir": _parse_contains_X,
+    "contains-symlink": _parse_contains_X,
+    "not-present": _parse_not_present,
+    "link-target": _parse_link_target,
     "perm": _parse_perm,
 
-    "contains-entry": __not_implemented,
-    "same-content": __not_implemented,
-    "hardlinks": __not_implemented,
+    "contains-entry": _not_implemented,
+    "same-content": _not_implemented,
+    "hardlinks": _not_implemented,
 }
 
 
@@ -170,10 +170,10 @@ class Manifest(object):
         data = self._data
         missing = set(x for x in data if data[x]["present"])
         for tinfo in tar:
-            normtname = self.__normname(tinfo.name)
+            normtname = self._normname(tinfo.name)
             if normtname is None or normtname not in data:
                 continue
-            self.__check_tar_entry(data[normtname], normtname, tinfo)
+            self._check_tar_entry(data[normtname], normtname, tinfo)
             missing.discard(normtname)
         if missing:
             first = sorted(missing)[0]
@@ -182,19 +182,19 @@ class Manifest(object):
     def check_apt_tarball(self, tar):
         data = self._data
         missing = set(x for x in data if data[x]["present"])
-        tar.go(partial(self.__apt_visit_tarball, missing))
+        tar.go(partial(self._apt_visit_tarball, missing))
         if missing:
             first = sorted(missing)[0]
             raise EntryPresentAssertionError(first)
 
-    def __apt_visit_tarball(self, data, missing, tarmember, _):
-        normtname = self.__normname(tarmember.name)
+    def _apt_visit_tarball(self, data, missing, tarmember, _):
+        normtname = self._normname(tarmember.name)
         if normtname is None or normtname not in data:
             return
-        self.__check_tar_entry(data[normtname], normtname, tarmember)
+        self._check_tar_entry(data[normtname], normtname, tarmember)
         missing.discard(normtname)
 
-    def __normname(self, normtname):
+    def _normname(self, normtname):
         if normtname == '.' or normtname == './':
             return None
         # If it has a leading /, keep it.  Regular tarballs usually don't, but
@@ -205,7 +205,7 @@ class Manifest(object):
             normtname = normtname.lstrip("./")
         return normtname
 
-    def __check_tar_entry(self, mentry, normtname, tarmember):
+    def _check_tar_entry(self, mentry, normtname, tarmember):
         assert mentry is not None
         assert "present" in mentry
 
