@@ -119,7 +119,7 @@ class TestSuite(object):
         """
         The only argument `workspace' is given the root of the test directory.
         """
-        self._workspace_path = workspace
+        self._workspace_path = abspath(workspace)
         self._test_dir = "%s/tests" % (workspace)
         self._context = load_config("%s/context.json" % (workspace))
 
@@ -129,14 +129,24 @@ class TestSuite(object):
         """
         # XXX: throw together some logic here
 
-        path = abspath("%s/templates/%s" % (self._workspace_path, name))
-        if os.path.exists(path):
-            return JinjaTemplate(path)
+        path = self._look_up("templates", name)
+        if path is None:
+            return None
+        return JinjaTemplate(path)
 
-        path = abspath("/usr/share/dpu/templates/%s" % (name))
-        if os.path.exists(path):
-            return JinjaTemplate(path)
+    def _look_up(self, thing, name):
+        """
+        Returns the path to the "thing" called "name" in the workspace
+        or in /usr/share/dpu.  Returns None if that thing does not
+        exists.
 
+        Thing is (usually) one of "templates", "builders" or
+        "checkers".
+        """
+        for base in (self._workspace_path, "/usr/share/dpu"):
+            path = os.path.join(base, thing, name)
+            if os.path.exists(path):
+                return path
         return None
 
     def get_test(self, test):
