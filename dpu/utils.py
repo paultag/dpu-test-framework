@@ -89,7 +89,7 @@ def abspath(folder):
 
 
 def rsync(source, target, excludes=None):
-    cmd = ['rsync', '-rpc', source + "/", target + "/"]
+    cmd = ['rsync', '-arpc', source + "/", target + "/"]
     if excludes:
         cmd.extend("--exclude=%s" % x for x in excludes)
     subprocess.check_call(cmd, shell=False)
