@@ -96,6 +96,8 @@ def rsync(source, target, excludes=None):
 
 
 def run_builder(cmd):
+    binary, path = cmd
+
     null = open("/dev/null", "w")
     stdout = null
     stderr = null
@@ -107,16 +109,19 @@ def run_builder(cmd):
                           stderr=stderr)
     null.close()
 
+
 def run_checker(cmd):
     null = open("/dev/null", "w")
     stderr = null
 
+    binary, path = cmd
+
     cmd = [binary, path]
-    output = subprocess.check_output(cmd,
-                                     shell=False,
-                                     stderr=stderr)
-    print output
+    subprocess.check_output(cmd,
+                            shell=False,
+                            stderr=stderr)
     null.close()
+
 
 def is_identical_with_diff(from_file, to_file,
                            from_data=None, to_data=None, output_fd=None):

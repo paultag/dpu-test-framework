@@ -27,10 +27,10 @@ def test_crazy_things():
     Make sure we can resolve test folders correctly.
     """
     ws = TestSuite(workspace)
-    test = ws.get_test("test-one")
-    assert test._template_search("upstream") is not None
+    test = ws.get_test("cruft-empty-diff")
+    assert test._template_search("hello") is not None
     assert test._template_search("generic") is not None
-    assert test._template_search("kruft") is None
+    assert test._template_search("hello-brainfuck") is None
 
 
 def test_test_context():
@@ -73,7 +73,7 @@ def test_templater():
     Make sure we can render out templates correctly
     """
     ws = TestSuite(workspace)
-    test = ws.get_test("test-one")
+    test = ws.get_test("cruft-empty-diff")
     source, version = test.get_source_and_version()
     version = version['upstream']
 

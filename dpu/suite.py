@@ -109,12 +109,15 @@ class Test(object):
             path = "%s/%s-%s" % (tmp, source, version)
             mkdir(path)
             tm.render(path)
-            for (thing, runner) in [("builders", run_builder), ("checkers", run_checker)]:
-                titer = ((x, suite._look_up(thing, x)) for x in self._context[thing])
+            for (thing, runner) in [("builders", run_builder),
+                                    ("checkers", run_checker)]:
+                titer = ((x, suite._look_up(thing, x)) for x in
+                         self._context[thing])
                 for (name, tpath) in titer:
                     if tpath is None:
-                        raise Exception("No %s called %s available" % (thing, name))
-                    runner([tpath, path])
+                        raise Exception("No %s called %s available" % (
+                            thing, name))
+                    runner((tpath, path))
 
 
 class TestSuite(object):

@@ -2,11 +2,12 @@
 # license.
 
 from functools import partial
-from manifestex import *
+from .exceptions import *
 
 ENTRY_TYPE_FILE = "file"
 ENTRY_TYPE_DIR = "dir"
 ENTRY_TYPE_SYMLINK = "symlink"
+
 
 def __get_edata(entry, data):
     if entry not in data:
@@ -22,7 +23,8 @@ def _split_usergroup(value):
         # allow "/" as separator (because tar uses it in tar -vt)
         user, group, re = value.split("/", 2)
         if re:
-            raise IOError('user and group must be separated with ":" if they contain "/"')
+            raise IOError(
+                'user & group must be separated with ":" if they contain "/"')
     return (user, group)
 
 
@@ -43,7 +45,11 @@ def __is_file_type(entry, edata, etype):
         edata["entry-type"] = etype
 
     if etype == ENTRY_TYPE_SYMLINK and "perm" in edata:
-        raise IOError("%s is expected to be a symlink, but has perm information")
+        raise IOError(
+            "%s is expected to be a symlink, but has perm information" % (
+                entry
+            ))
+
 
 def __parse_link_target(data, cmd, last, arg):
     entry = last
@@ -84,6 +90,7 @@ def __parse_contains_X(data, cmd, last, arg):
     __is_file_type(entry, edata, etype)
     return entry
 
+
 def _parse_perm(data, cmd, last, arg):
     entry = None
     mode = None
@@ -100,7 +107,8 @@ def _parse_perm(data, cmd, last, arg):
                 entry = args[2]
 
     if entry is None:
-        raise IOError("%s takes at least one and at most three arguments" % (cmd))
+        raise IOError("%s takes at least one and at most three arguments" % (
+            cmd))
 
     edata = __get_edata(entry, data)
     __is_present(entry, edata)
