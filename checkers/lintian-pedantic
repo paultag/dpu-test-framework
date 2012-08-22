@@ -1,3 +1,3 @@
 #!/bin/bash
 cd $1/../
-/usr/bin/lintian -IE --pedantic *changes
+/usr/bin/lintian -IE --pedantic *changes > lintian-pedantic
