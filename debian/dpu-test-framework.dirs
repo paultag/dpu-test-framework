@@ -1,4 +1,4 @@
 usr/bin/
 usr/share/dpu/templates/
-usr/lib/dpu/builders/
-usr/lib/dpu/checkers/
+usr/share/dpu/builders/
+usr/share/dpu/checkers/
