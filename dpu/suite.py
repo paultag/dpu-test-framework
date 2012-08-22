@@ -5,7 +5,8 @@ This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import (load_config, abspath, tmpdir,
-                       mkdir, run_builder, run_checker)
+                       mkdir, run_builder, run_checker,
+                       is_identical_with_diff)
 import os
 
 
@@ -118,6 +119,23 @@ class Test(object):
                         raise Exception("No %s called %s available" % (
                             thing, name))
                     runner((tpath, path))
+                # OK, let's see what just went on.
+            results = {}
+            for checker in self._context['checkers']:
+                pristine = "%s/%s" % (self._test_path, checker)
+                output = "%s/%s" % (tmp, checker)
+                if os.path.exists(pristine):
+                    # OK, let's verify
+                    if os.path.exists(output):
+                        if is_identical_with_diff(pristine, output):
+                            results[checker] = "passed"
+                        else:
+                            results[checker] = "failed"
+                    else:
+                        results[checker] = "no-output"
+                else:
+                    results[checker] = "no-pristine"
+            return results
 
 
 class TestSuite(object):
