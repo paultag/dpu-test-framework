@@ -2,7 +2,7 @@
 # license.
 
 from functools import partial
-
+from manifestex import *
 
 def __get_edata(entry, data):
     if entry not in data:
@@ -119,7 +119,7 @@ class Manifest(object):
             missing.discard(normtname)
         if missing:
             first = sorted(missing)[0]
-            raise AssertionError("Missing %s" % first)
+            raise EntryPresentAssertionError(first)
 
     def check_apt_tarball(self, tar):
         data = self._data
@@ -127,7 +127,7 @@ class Manifest(object):
         tar.go(partial(self.__apt_visit_tarball, missing))
         if missing:
             first = sorted(missing)[0]
-            raise AssertionError("Missing %s" % first)
+            raise EntryPresentAssertionError(first)
 
     def __apt_visit_tarball(self, data, missing, tarmember, _):
         normtname = self.__normname(tarmember.name)
@@ -148,13 +148,11 @@ class Manifest(object):
         return normtname
 
     def __check_tar_entry(self, mentry, normtname, tarmember):
-        # XXX: Maybe AssertionError is a bad choice
         if not mentry or "present" not in mentry:
             # We have no information on it
             return
         if not mentry["present"]:
-            raise AssertionError("%s is not supposed to be present" % (
-                normtname))
+            raise EntryNotPresentAssertionError(normtname)
 
         if "entry-type" in mentry:
             etype = mentry["entry-type"]
@@ -171,18 +169,18 @@ class Manifest(object):
                     "%s is present, but not a known type!? (expected: %s)" % (
                         normtname, etype))
             if not ok:
-                raise AssertionError("%s is present but not a %s" % (
-                    normtname, etype))
+                raise EntryWrongTypeAssertionError(normtname, etype)
 
         if "link-target" in mentry:
             assert tarmember.issym()
             if mentry["link-target"] != tarmember.linkname:
-                raise AssertionError(
-                    "%s is a symlink, but points to %s intead of %s" % (
-                        normtname, tarmember.linkname, mentry["link-target"]))
+                raise SymlinkTargetAssertionError(normtname,
+                                                  mentry["link-target"],
+                                                  tarmember.linkname)
+
         if "perm" in mentry:
             assert not tarmember.issym()
             if mentry["perm"] != tarmember.mode:
-                raise AssertionError("%s is mode 0%o instead of 0%o" % (
-                                         normtname, mentry["perm"],
-                                         tarmember.mode))
+                raise EntryPermissionAssertionError(normtname,
+                                                    mentry["perm"],
+                                                    tarmember.mode)
