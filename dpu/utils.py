@@ -95,44 +95,28 @@ def rsync(source, target, excludes=None):
     subprocess.check_call(cmd, shell=False)
 
 
-def run_builder(biny, path):
-    binaries = [
-        abspath("./builders/%s" % (biny)),
-        abspath("/usr/lib/dpu/builders/%s" % (biny))
-    ]
-    for binary in binaries:
-        if os.path.exists(binary):
-            null = open("/dev/null", "w")
-            stdout = null
-            stderr = null
+def run_builder(cmd):
+    null = open("/dev/null", "w")
+    stdout = null
+    stderr = null
 
-            cmd = [binary, path]
-            subprocess.check_call(cmd,
-                                  shell=False,
-                                  stdout=stdout,
-                                  stderr=stderr)
-            return
-    raise Exception("No such builder: %s" % (biny))
+    cmd = [binary, path]
+    subprocess.check_call(cmd,
+                          shell=False,
+                          stdout=stdout,
+                          stderr=stderr)
+    null.close()
 
+def run_checker(cmd):
+    null = open("/dev/null", "w")
+    stderr = null
 
-def run_checker(biny, path):
-    binaries = [
-        abspath("./checkers/%s" % (biny)),
-        abspath("/usr/lib/dpu/checkers/%s" % (biny))
-    ]
-    for binary in binaries:
-        if os.path.exists(binary):
-            null = open("/dev/null", "w")
-            stderr = null
-
-            cmd = [binary, path]
-            output = subprocess.check_output(cmd,
-                                             shell=False,
-                                             stderr=stderr)
-            print output
-            return
-    raise Exception("No such builder: %s" % (biny))
-
+    cmd = [binary, path]
+    output = subprocess.check_output(cmd,
+                                     shell=False,
+                                     stderr=stderr)
+    print output
+    null.close()
 
 def is_identical_with_diff(from_file, to_file,
                            from_data=None, to_data=None, output_fd=None):

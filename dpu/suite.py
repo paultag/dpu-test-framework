@@ -5,7 +5,7 @@ This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import (load_config, abspath, tmpdir,
-                       mkdir, run_builder, run_checker)
+                       mkdir)
 import os
 
 
@@ -101,17 +101,17 @@ class Test(object):
         source, version = self.get_source_and_version()
         version = version['upstream']
         tm = self.get_template_stack()
+        suite = self._workspace
         with tmpdir() as tmp:
             path = "%s/%s-%s" % (tmp, source, version)
             mkdir(path)
             tm.render(path)
-            for builder in self._context['builders']:
-                run_builder(builder, path)
-                # print tmp
-                # print "Waiting for user"
-                # sys.stdin.readlines()
-            for checker in self._context['checkers']:
-                run_checker(checker, path)
+            for (thing, runner) in [("builders", run_builder), ("checkers", run_checker)]:
+                titer = ((x, suite._look_up(thing, x)) for x in self._context[thing])
+                for (name, tpath) in titer:
+                    if tpath is None:
+                        raise Exception("No %s called %s available" % (thing, name))
+                    runner([tpath, path])
 
 
 class TestSuite(object):
