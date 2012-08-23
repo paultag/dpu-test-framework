@@ -1,0 +1,5 @@
+# The parser will automatically create "dir" entries below the
+# requested entry...
+contains-file usr/share/doc/foo/copyright
+# so the following is not possible
+contains-file usr

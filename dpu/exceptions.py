@@ -14,12 +14,12 @@ class ManifestCheckError(Exception):
 
 class EntryPresentAssertionError(ManifestCheckError):
     def __str__(self):
-        return "Expected entry %s is missing" % self._entry
+        return "Expected entry %s is missing" % self.entry
 
 
 class EntryNotPresentAssertionError(ManifestCheckError):
     def __str__(self):
-        return "Entry %s is present, but should not be" % self._entry
+        return "Entry %s is present, but should not be" % self.entry
 
 
 class EntryWrongTypeAssertionError(ManifestCheckError):
