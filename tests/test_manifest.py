@@ -13,6 +13,12 @@ from dpu.tarball import open_compressed_tarball
 resources = "./tests/resources/"
 rundir = "./tests/staging/"
 
+
+def check_manifest(resdir, manifest):
+    mfile = os.path.join(resources, resdir, manifest)
+    return parse_manifest(mfile)
+
+
 def check_tarball(resdir, tfilter=None, rootmod=None):
     test_res = os.path.join(resources, resdir)
     man = parse_manifest(os.path.join(test_res, "manifest"))
@@ -140,3 +146,11 @@ def test_manifest_missing_file():
         assert e.entry == "usr/share/doc/foo/copyright"
     except ManifestCheckError as e:
         raise AssertionError("Unexpected check failure %s" % str(e))
+
+
+def test_implicit_dir():
+    try:
+        check_manifest("manifests", "implicit-dirs")
+    except IOError as e:
+        assert str(e) == "usr cannot be a file and a dir at the same time"
+

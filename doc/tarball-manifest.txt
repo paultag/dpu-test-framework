@@ -70,7 +70,6 @@ perm operm [ouser:ogroup [entry]]
 # keyword can be one of:
 #  TESTDIR - some/file is a path relative from the test source dir
 #  WORKDIR - some/file is a path relative from the working dir
-#  PACKAGE - some/file is a path relative to the root of the tarball
 #
 # If keyword is omitted, it defaults to WORKDIR.  If keyword is
 # WORKDIR or TESTDIR, then some/file may be a symlink.

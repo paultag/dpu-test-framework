@@ -1,6 +1,7 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
+import os
 from functools import partial
 from .exceptions import *
 
@@ -28,18 +29,26 @@ def _split_usergroup(value):
     return (user, group)
 
 
-def _is_present(entry, edata, present=True):
+def _is_present(entry, edata, data, present=True):
     if "present" in edata and edata["present"] != present:
         raise IOError("%s cannot be present and not-present at the same time" %
                       (entry))
     edata["present"] = present
+    if present:
+        # if entry is present, then so is the dir containing it
+        dirpart, _ = os.path.split(entry)
+        if not dirpart:
+            # its parent is the "root", stop here
+            return
+        dedata = _get_edata(dirpart, data)
+        # This will "create" the parent dirs recursively
+        _is_file_type(dirpart, dedata, ENTRY_TYPE_DIR, data)
 
-
-def _is_file_type(entry, edata, etype):
-    _is_present(entry, edata)
+def _is_file_type(entry, edata, etype, data):
+    _is_present(entry, edata, data)
     if "entry-type" in edata:
         if edata["entry-type"] != etype:
-            raise IOError("%s cannot be a %s and %s at the same time" %
+            raise IOError("%s cannot be a %s and a %s at the same time" %
                           (entry, etype, edata["entry-type"]))
     else:
         edata["entry-type"] = etype
@@ -64,7 +73,7 @@ def _parse_link_target(data, cmd, last, arg):
         raise IOError("%s takes either one or two arguments" % (cmd))
 
     edata = _get_edata(entry, data)
-    _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK)
+    _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK, data)
     if "link-target" in edata and edata["link-target"] != target:
         raise IOError("%s cannot point to %s and %s at the same time" %
                       (entry, target, edata["link-target"]))
@@ -77,7 +86,7 @@ def _parse_not_present(data, cmd, last, arg):
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
     edata = _get_edata(entry, data)
-    _is_present(entry, edata, False)
+    _is_present(entry, edata, data, present=False)
     return None
 
 
@@ -87,7 +96,7 @@ def _parse_contains_X(data, cmd, last, arg):
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
     edata = _get_edata(entry, data)
-    _is_file_type(entry, edata, etype)
+    _is_file_type(entry, edata, etype, data)
     return entry
 
 
@@ -111,7 +120,7 @@ def _parse_perm(data, cmd, last, arg):
             cmd))
 
     edata = _get_edata(entry, data)
-    _is_present(entry, edata)
+    _is_present(entry, edata, data)
 
     if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
         raise IOError("%s cannot be applied to symlink entry" % entry)
