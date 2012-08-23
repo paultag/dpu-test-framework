@@ -2,18 +2,14 @@
 # license.
 
 import os
+from collections import defaultdict
+
 from functools import partial
 from .exceptions import *
 
 ENTRY_TYPE_FILE = "file"
 ENTRY_TYPE_DIR = "dir"
 ENTRY_TYPE_SYMLINK = "symlink"
-
-
-def _get_edata(entry, data):
-    if entry not in data:
-        data[entry] = {}
-    return data[entry]
 
 
 def _split_usergroup(value):
@@ -40,7 +36,7 @@ def _is_present(entry, edata, data, present=True):
         if not dirpart:
             # its parent is the "root", stop here
             return
-        dedata = _get_edata(dirpart, data)
+        dedata = data[dirpart]
         # This will "create" the parent dirs recursively
         _is_file_type(dirpart, dedata, ENTRY_TYPE_DIR, data)
 
@@ -72,7 +68,7 @@ def _parse_link_target(data, cmd, last, arg):
     if target is None:
         raise IOError("%s takes either one or two arguments" % (cmd))
 
-    edata = _get_edata(entry, data)
+    edata = data[entry]
     _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK, data)
     if "link-target" in edata and edata["link-target"] != target:
         raise IOError("%s cannot point to %s and %s at the same time" %
@@ -85,7 +81,7 @@ def _parse_not_present(data, cmd, last, arg):
     if not arg or len(arg.split(None, 1)) != 1:
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
-    edata = _get_edata(entry, data)
+    edata = data[entry]
     _is_present(entry, edata, data, present=False)
     return None
 
@@ -95,7 +91,7 @@ def _parse_contains_X(data, cmd, last, arg):
     if not arg or len(arg.split(None, 1)) != 1:
         raise IOError("%s takes exactly one argument" % cmd)
     entry = arg
-    edata = _get_edata(entry, data)
+    edata = data[entry]
     _is_file_type(entry, edata, etype, data)
     return entry
 
@@ -119,7 +115,7 @@ def _parse_perm(data, cmd, last, arg):
         raise IOError("%s takes at least one and at most three arguments" % (
             cmd))
 
-    edata = _get_edata(entry, data)
+    edata = data[entry]
     _is_present(entry, edata, data)
 
     if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
@@ -156,7 +152,7 @@ COMMANDS = {
 
 
 def parse_manifest(fname):
-    data = {}
+    data = defaultdict(dict)
     with open(fname) as f:
         last = None
         for line in (l.lstrip() for l in f):
