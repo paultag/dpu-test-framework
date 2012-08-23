@@ -25,6 +25,41 @@ def _split_usergroup(value):
     return (user, group)
 
 
+def _unix_perm(p):
+    ftype = None
+    o = 0
+    if len(p) != 10:
+        raise IOError("%s is not a valid permission" % p)
+    if p[0] == 'd':
+        ftype = ENTRY_TYPE_DIR
+    elif p[0] == '-' or p[0] == 'h':
+        ftype = ENTRY_TYPE_FILE
+    elif p[0] == 'l':
+        ftype = ENTRY_TYPE_SYMLINK
+    else:
+        raise NotImplementedError("Cannot parse %s" % p)
+    if p[1] == 'r': o |= 00400
+    if p[2] == 'w': o |= 00200
+    if p[3] == 'x': o |= 00200
+    if p[3] == 'x': o |= 00100
+    if p[3] == 's': o |= 04100
+    if p[3] == 'S': o |= 04000
+
+    if p[4] == 'r': o |= 00040
+    if p[5] == 'w': o |= 00020
+    if p[6] == 'x': o |= 00010
+    if p[6] == 's': o |= 02010
+    if p[6] == 'S': o |= 02000
+
+    if p[7] == 'r': o |= 00004
+    if p[8] == 'w': o |= 00002
+    if p[9] == 'x': o |= 00001
+    if p[9] == 't': o |= 01001
+    if p[9] == 'T': o |= 01000
+
+    return (ftype, o)
+
+
 def _is_present(entry, edata, data, present=True):
     if "present" in edata and edata["present"] != present:
         raise IOError("%s cannot be present and not-present at the same time" %
@@ -96,6 +131,43 @@ def _parse_contains_X(data, cmd, last, arg):
     return entry
 
 
+def _set_perm(entry, edata, mode, user, group):
+    if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
+        raise IOError("%s cannot be applied to symlink entry" % entry)
+
+    if "perm" in edata and edata["perm"] != mode:
+        raise IOError("Conflicting perm mode for %s" % entry)
+    edata["perm"] = mode
+
+    if user is not None:
+        # TODO:
+        # Problem here is that python-apt's "TarMember" does not expose
+        # the user/group, only uid/gid
+        raise NotImplementedError("user:group setting not implemented")
+
+
+def _parse_contains_entry(data, cmd, last, arg):
+    entry = None
+    uperm = None
+    user = None
+    group = None
+    if arg:
+        args = arg.split(None, 3)
+        if len(args) == 2 or len(args) == 3:
+            uperm = args[0]
+            entry = args[-1]
+            if len(args) == 3:
+                user, group = _split_usergroup(args[1])
+    if entry is None:
+        raise IOError("%s takes at least two and at most three arguments" % (
+            cmd))
+    edata = data[entry]
+    ftype, mode = _unix_perm(uperm)
+    _is_file_type(entry, edata, ftype, data)
+    _set_perm(entry, edata, mode, user, group)
+    return entry
+
+
 def _parse_perm(data, cmd, last, arg):
     entry = None
     mode = None
@@ -117,19 +189,7 @@ def _parse_perm(data, cmd, last, arg):
 
     edata = data[entry]
     _is_present(entry, edata, data)
-
-    if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
-        raise IOError("%s cannot be applied to symlink entry" % entry)
-
-    if "perm" in edata and edata["perm"] != mode:
-        raise IOError("Conflicting perm mode for %s" % entry)
-    edata["perm"] = mode
-
-    if user is not None:
-        # TODO:
-        # Problem here is that python-apt's "TarMember" does not expose
-        # the user/group, only uid/gid
-        raise NotImplementedError("user:group setting not implemented")
+    _set_perm(entry, edata, mode, user, group)
 
     return entry
 
@@ -144,8 +204,8 @@ COMMANDS = {
     "not-present": _parse_not_present,
     "link-target": _parse_link_target,
     "perm": _parse_perm,
+    "contains-entry": _parse_contains_entry,
 
-    "contains-entry": _not_implemented,
     "same-content": _not_implemented,
     "hardlinks": _not_implemented,
 }
@@ -155,10 +215,10 @@ def parse_manifest(fname):
     data = defaultdict(dict)
     with open(fname) as f:
         last = None
-        for line in (l.lstrip() for l in f):
+        for line in (l.strip() for l in f):
             if not line or line[0] == '#':
                 continue
-            spl = line.split(None, 2)
+            spl = line.split(None, 1)
             if spl[0] not in COMMANDS:
                 raise IOError("Unknown command %s" % spl[0])
             if len(spl) == 1:

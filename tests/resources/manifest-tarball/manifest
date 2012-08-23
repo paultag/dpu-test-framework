@@ -1,5 +1,7 @@
 # Comment lines start with "#" and are ignored till end of line
 
+contains-entry -rwxr-xr-x usr/bin/script
+
 contains-dir usr/share/doc/foo
 contains-file usr/share/doc/foo/copyright
 perm 0644
