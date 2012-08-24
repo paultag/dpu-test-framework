@@ -6,7 +6,7 @@ This module manages the test workspace, and helps manage the tests.
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import (load_config, abspath, tmpdir,
                        mkdir, run_builder, run_checker,
-                       is_identical_with_diff)
+                       is_identical_with_diff, run_command)
 import os
 
 
@@ -98,7 +98,15 @@ class Test(object):
                 return templ
         return local_search
 
+    def _run_hook(self, stage, path="."):
+        path = "%s/%s" % (self._test_path, stage)
+        if os.path.exists(path):
+            run_command([path, path],
+                        output=True)
+
     def run(self):
+        self._run_hook("init")
+
         if "todo" in self._context:
             return "todo"
 
@@ -109,7 +117,9 @@ class Test(object):
         with tmpdir() as tmp:
             path = "%s/%s-%s" % (tmp, source, version)
             mkdir(path)
+            self._run_hook("tmpdir", path=tmp)
             tm.render(path)
+            self._run_hook("pre-build", path=path)
             for (thing, runner) in [("builders", run_builder),
                                     ("checkers", run_checker)]:
                 titer = ((x, suite._look_up(thing, x)) for x in
@@ -120,6 +130,7 @@ class Test(object):
                             thing, name))
                     runner((tpath, path))
                 # OK, let's see what just went on.
+            self._run_hook("post-build", path=path)
             results = {}
             for checker in self._context['checkers']:
                 pristine = "%s/%s" % (self._test_path, checker)
@@ -137,7 +148,8 @@ class Test(object):
                         results[checker] = "no-output"
                 else:
                     results[checker] = "no-pristine"
-            return results
+            self._run_hook("finally", path=path)
+        return results
 
 
 class TestSuite(object):

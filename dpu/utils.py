@@ -95,32 +95,26 @@ def rsync(source, target, excludes=None):
     subprocess.check_call(cmd, shell=False)
 
 
-def run_builder(cmd):
-    binary, path = cmd
+def run_command(cmd, output=False):
 
-    null = open("/dev/null", "w")
-    stdout = null
-    stderr = null
+    out = open("/dev/null", "w")
 
-    cmd = [binary, path]
     subprocess.check_call(cmd,
                           shell=False,
-                          stdout=stdout,
-                          stderr=stderr)
-    null.close()
+                          stderr=out,
+                          stdout=out)
+
+
+def run_builder(cmd):
+    binary, path = cmd
+    cmd = [binary, path]
+    run_command(cmd)
 
 
 def run_checker(cmd):
-    null = open("/dev/null", "w")
-    stderr = null
-
     binary, path = cmd
-
     cmd = [binary, path]
-    subprocess.check_output(cmd,
-                            shell=False,
-                            stderr=stderr)
-    null.close()
+    run_command(cmd)
 
 
 def is_identical_with_diff(from_file, to_file,
