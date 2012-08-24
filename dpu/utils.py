@@ -96,9 +96,9 @@ def rsync(source, target, excludes=None):
 
 
 def run_command(cmd, output=False):
-
     out = open("/dev/null", "w")
-
+    if output:
+        out = None
     subprocess.check_call(cmd,
                           shell=False,
                           stderr=out,

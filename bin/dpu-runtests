@@ -46,7 +46,13 @@ class TestJob(threading.Thread):
         for test in self.iterator:
             print "%s: Running test -- %s" % (self.name, test.name)
             val = test.run()
-            print "%s: Ran test     -- %s (%s)" % (self.name, test.name, val)
+            stat = [val[x] for x in val]
+            if "failed" in stat:
+                sys.stdout.write("[1;31m")
+            else:
+                sys.stdout.write("[1;32m")
+            print "%s: Ran test     -- %s (%s)" % (self.name, test.name, stat)
+            sys.stdout.write("[0m")
 
 
 for guy in range(0, t_count):

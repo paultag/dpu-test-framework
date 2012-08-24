@@ -9,4 +9,6 @@ install:
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/usr/share/man/man1
 	cp -v hello $(DESTDIR)/usr/bin
-	cp hello.1.gz $(DESTDIR)/usr/share/man/man1
+	if [ -e hello.1.gz ]; then \
+		cp hello.1.gz $(DESTDIR)/usr/share/man/man1; \
+	fi

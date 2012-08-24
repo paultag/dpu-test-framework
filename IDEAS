@@ -4,12 +4,6 @@ Ideas
 This document contains various ideas for features/design for the
 Debian Package Utility test framework and also open ideas.
 
- * Hooks [L]
-   (Lintian hooks listed below)
-   - pre_upstream (for non-native pkg only)
-   - pre_build
-   - post_test
-   - test_calibration
  * Declarative description of package contents
    (example ideas)
    - pkg X (does not) contains file Y and Y has perm Z
@@ -20,8 +14,6 @@ Debian Package Utility test framework and also open ideas.
      (e.g. "pkg X contains usr/share/doc/X/copyright" should assume that X also
       contains "usr/", "usr/share/", "usr/share/doc/" and usr/share/doc/X/"
       even if they are not explicitly listed)
- * Support for TODO and SKIP [L]
-   - How to deal with "build-time" TODO failures?
  * Support for running tool X and storing/comparing its (filtered)
    output at/to Y
    - filter ideas: sort [L], sed/grep/awk or maybe allow "any pipeline"?
@@ -71,6 +63,14 @@ Debian Package Utility test framework and also open ideas.
 Implemented
 -----------
 
+ * Hooks [L]
+   (Lintian hooks listed below)
+   - pre_upstream (for non-native pkg only)
+   - pre_build
+   - post_test
+   - test_calibration
+ * Support for TODO and SKIP [L]
+   - How to deal with "build-time" TODO failures?
  * Template support [L]
    (see "Templates" section below)
  * Support "test suite" defaults

@@ -99,16 +99,16 @@ class Test(object):
         return local_search
 
     def _run_hook(self, stage, path="."):
-        path = "%s/%s" % (self._test_path, stage)
-        if os.path.exists(path):
-            run_command([path, path],
+        bin_path = "%s/%s" % (self._test_path, stage)
+        if os.path.exists(bin_path):
+            run_command([bin_path, path],
                         output=True)
 
     def run(self):
         self._run_hook("init")
 
         if "todo" in self._context:
-            return "todo"
+            return {}
 
         source, version = self.get_source_and_version()
         version = version['upstream']
