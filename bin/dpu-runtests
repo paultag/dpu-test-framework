@@ -47,7 +47,9 @@ class TestJob(threading.Thread):
             print "%s: Running test -- %s" % (self.name, test.name)
             val = test.run()
             stat = [val[x] for x in val]
-            if "failed" in stat:
+            if len(stat) == 0:
+                sys.stdout.write("[33m")
+            elif "failed" in stat:
                 sys.stdout.write("[1;31m")
             else:
                 sys.stdout.write("[1;32m")
