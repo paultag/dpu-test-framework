@@ -1,0 +1,7 @@
+--- tests/resources/util-diff/newf
++++ tests/resources/util-diff/orig
+@@ -1,2 +1,3 @@
+-foobar
++foo
++bar
+ baz

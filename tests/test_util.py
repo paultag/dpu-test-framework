@@ -108,11 +108,8 @@ def test_string_diff_ret():
                                    output_fd=null)
 
 
-def test_file_diff_output():
-    cmp1 = """foo
-bar
-baz
-"""
+def test_string_diff_output():
+    cmp1 = open("tests/resources/util-diff/orig", 'r').read()
     with tmpdir() as tmp:
         f = "%s/%s" % (tmp, "diff.str")
         fd = open(f, "w")
@@ -122,5 +119,5 @@ baz
         fd.close()
 
         cp1 = open(f, "r").read()
-        cp2 = open("tests/resources/util-diff/diff", "r").read()
+        cp2 = open("tests/resources/util-diff/diff.str", "r").read()
         assert cp1 == cp2
