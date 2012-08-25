@@ -4,8 +4,6 @@
 This module tests some basics in the utils class.
 """
 
-import os
-
 from dpu.utils import (dir_walk, mkdir, tmpdir, cd,
                        diff, diff_against_string)
 

@@ -28,8 +28,8 @@ def _split_usergroup(value):
 
 def _is_present(entry, edata, data, present=True):
     if "present" in edata and edata["present"] != present:
-        raise InvalidManifestError("%s cannot be present and not-present at the same time" %
-                      (entry))
+        raise InvalidManifestError(
+            "%s cannot be present and not-present at the same time" % (entry))
     edata["present"] = present
     if present:
         # if entry is present, then so is the dir containing it
@@ -46,8 +46,9 @@ def _is_file_type(entry, edata, etype, data):
     _is_present(entry, edata, data)
     if "entry-type" in edata:
         if edata["entry-type"] != etype:
-            raise InvalidManifestError("%s cannot be a %s and a %s at the same time" %
-                          (entry, etype, edata["entry-type"]))
+            raise InvalidManifestError(
+                "%s cannot be a %s and a %s at the same time" % (
+                    entry, etype, edata["entry-type"]))
     else:
         edata["entry-type"] = etype
 
@@ -68,13 +69,15 @@ def _parse_link_target(data, cmd, last, arg):
             if len(args) > 1:
                 entry = args[1]
     if target is None:
-        raise InvalidManifestError("%s takes either one or two arguments" % (cmd))
+        raise InvalidManifestError("%s takes either one or two arguments" % (
+            cmd))
 
     edata = data[entry]
     _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK, data)
     if "link-target" in edata and edata["link-target"] != target:
-        raise InvalidManifestError("%s cannot point to %s and %s at the same time" %
-                      (entry, target, edata["link-target"]))
+        raise InvalidManifestError(
+            "%s cannot point to %s and %s at the same time" % (
+                entry, target, edata["link-target"]))
     edata["link-target"] = target
     return entry
 
@@ -100,7 +103,8 @@ def _parse_contains_X(data, cmd, last, arg):
 
 def _set_perm(entry, edata, mode, user, group):
     if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
-        raise InvalidManifestError("%s cannot be applied to symlink entry" % entry)
+        raise InvalidManifestError("%s cannot be applied to symlink entry" % (
+            entry))
 
     if "perm" in edata and edata["perm"] != mode:
         raise InvalidManifestError("Conflicting perm mode for %s" % entry)
@@ -126,8 +130,8 @@ def _parse_contains_entry(data, cmd, last, arg):
             if len(args) == 3:
                 user, group = _split_usergroup(args[1])
     if entry is None:
-        raise InvalidManifestError("%s takes at least two and at most three arguments" % (
-            cmd))
+        raise InvalidManifestError(
+            "%s takes at least two and at most three arguments" % (cmd))
     edata = data[entry]
     ftype, mode = unix_perm(uperm)
     _is_file_type(entry, edata, ftype, data)
@@ -151,8 +155,8 @@ def _parse_perm(data, cmd, last, arg):
                 entry = args[2]
 
     if entry is None:
-        raise InvalidManifestError("%s takes at least one and at most three arguments" % (
-            cmd))
+        raise InvalidManifestError(
+            "%s takes at least one and at most three arguments" % (cmd))
 
     edata = data[entry]
     _is_present(entry, edata, data)

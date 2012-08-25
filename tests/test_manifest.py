@@ -95,11 +95,12 @@ def test_manifest():
 def test_manifest_bad_symlink():
     try:
         check_tarball("manifest-tarball", tfilter=_break_symlink)
-        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+        raise AssertionError(
+            "Bad mojo! Method is not supposed to return normally")
     except SymlinkTargetAssertionError as e:
         assert e.entry == "usr/share/doc/foo/symlink-source"
         assert e.expected == "symlink-target"
-        assert e.actual == "debian/rules" # yes, yes it does!
+        assert e.actual == "debian/rules"  # yes, yes it does!
     except ManifestCheckError as e:
         raise AssertionError("Unexpected check failure %s" % str(e))
 
@@ -107,7 +108,8 @@ def test_manifest_bad_symlink():
 def test_manifest_bad_mode():
     try:
         check_tarball("manifest-tarball", tfilter=_break_mode)
-        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+        raise AssertionError(
+            "Bad mojo! Method is not supposed to return normally")
     except EntryPermissionAssertionError as e:
         assert e.entry == "usr/share/doc/foo/copyright"
         assert e.expected == 0644
@@ -119,7 +121,8 @@ def test_manifest_bad_mode():
 def test_manifest_bad_type():
     try:
         check_tarball("manifest-tarball", rootmod=_alter_root_break_type)
-        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+        raise AssertionError(
+            "Bad mojo! Method is not supposed to return normally")
     except EntryWrongTypeAssertionError as e:
         assert e.entry == "usr/share/doc/foo/copyright"
         assert e.expected == "file"
@@ -130,8 +133,10 @@ def test_manifest_bad_type():
 
 def test_manifest_unexpected_file():
     try:
-        check_tarball("manifest-tarball", rootmod=_alter_root_add_unexpected_file)
-        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+        check_tarball("manifest-tarball",
+                      rootmod=_alter_root_add_unexpected_file)
+        raise AssertionError(
+            "Bad mojo! Method is not supposed to return normally")
     except EntryNotPresentAssertionError as e:
         assert e.entry == "usr/random/place"
     except ManifestCheckError as e:
@@ -141,7 +146,8 @@ def test_manifest_unexpected_file():
 def test_manifest_missing_file():
     try:
         check_tarball("manifest-tarball", tfilter=_break_present)
-        raise AssertionError("Bad mojo! Method is not supposed to return normally")
+        raise AssertionError(
+            "Bad mojo! Method is not supposed to return normally")
     except EntryPresentAssertionError as e:
         assert e.entry == "usr/share/doc/foo/copyright"
     except ManifestCheckError as e:
@@ -152,5 +158,5 @@ def test_implicit_dir():
     try:
         check_manifest("manifests", "implicit-dirs")
     except InvalidManifestError as e:
-        assert str(e) == "Invalid Manifest: usr cannot be a file and a dir at the same time"
-
+        assert str(e) == \
+            "Invalid Manifest: usr cannot be a file and a dir at the same time"
