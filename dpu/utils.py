@@ -11,6 +11,10 @@ import subprocess
 from itertools import starmap, chain
 from contextlib import contextmanager
 
+from dpu.manifest import (ENTRY_TYPE_FILE,
+                          ENTRY_TYPE_DIR,
+                          ENTRY_TYPE_SYMLINK)
+
 flattern = chain.from_iterable
 
 
@@ -141,3 +145,41 @@ def diff_against_string(from_file, to_string, output_fd=None):
         proc.stdin.close()
     ret = proc.wait()
     return ret == 0
+
+
+def unix_perm(p):
+    ftype = None
+    o = 0
+    if len(p) != 10:
+        raise IOError("%s is not a valid permission" % p)
+    if p[0] == 'd':
+        ftype = ENTRY_TYPE_DIR
+    elif p[0] == '-' or p[0] == 'h':
+        ftype = ENTRY_TYPE_FILE
+    elif p[0] == 'l':
+        ftype = ENTRY_TYPE_SYMLINK
+    else:
+        raise NotImplementedError("Cannot parse %s" % p)
+
+
+
+    if p[1] == 'r': o |= 00400
+    if p[2] == 'w': o |= 00200
+    if p[3] == 'x': o |= 00200
+    if p[3] == 'x': o |= 00100
+    if p[3] == 's': o |= 04100
+    if p[3] == 'S': o |= 04000
+
+    if p[4] == 'r': o |= 00040
+    if p[5] == 'w': o |= 00020
+    if p[6] == 'x': o |= 00010
+    if p[6] == 's': o |= 02010
+    if p[6] == 'S': o |= 02000
+
+    if p[7] == 'r': o |= 00004
+    if p[8] == 'w': o |= 00002
+    if p[9] == 'x': o |= 00001
+    if p[9] == 't': o |= 01001
+    if p[9] == 'T': o |= 01000
+
+    return (ftype, o)

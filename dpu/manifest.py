@@ -1,15 +1,16 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
+ENTRY_TYPE_DIR = "dir"
+ENTRY_TYPE_FILE = "file"
+ENTRY_TYPE_SYMLINK = "symlink"
+
 import os
+from functools import partial
 from collections import defaultdict
 
-from functools import partial
 from .exceptions import *
-
-ENTRY_TYPE_FILE = "file"
-ENTRY_TYPE_DIR = "dir"
-ENTRY_TYPE_SYMLINK = "symlink"
+from dpu.utils import unix_perm
 
 
 def _split_usergroup(value):
@@ -23,44 +24,6 @@ def _split_usergroup(value):
             raise IOError(
                 'user & group must be separated with ":" if they contain "/"')
     return (user, group)
-
-
-def _unix_perm(p):
-    ftype = None
-    o = 0
-    if len(p) != 10:
-        raise IOError("%s is not a valid permission" % p)
-    if p[0] == 'd':
-        ftype = ENTRY_TYPE_DIR
-    elif p[0] == '-' or p[0] == 'h':
-        ftype = ENTRY_TYPE_FILE
-    elif p[0] == 'l':
-        ftype = ENTRY_TYPE_SYMLINK
-    else:
-        raise NotImplementedError("Cannot parse %s" % p)
-
-
-
-    if p[1] == 'r': o |= 00400
-    if p[2] == 'w': o |= 00200
-    if p[3] == 'x': o |= 00200
-    if p[3] == 'x': o |= 00100
-    if p[3] == 's': o |= 04100
-    if p[3] == 'S': o |= 04000
-
-    if p[4] == 'r': o |= 00040
-    if p[5] == 'w': o |= 00020
-    if p[6] == 'x': o |= 00010
-    if p[6] == 's': o |= 02010
-    if p[6] == 'S': o |= 02000
-
-    if p[7] == 'r': o |= 00004
-    if p[8] == 'w': o |= 00002
-    if p[9] == 'x': o |= 00001
-    if p[9] == 't': o |= 01001
-    if p[9] == 'T': o |= 01000
-
-    return (ftype, o)
 
 
 def _is_present(entry, edata, data, present=True):
@@ -77,6 +40,7 @@ def _is_present(entry, edata, data, present=True):
         dedata = data[dirpart]
         # This will "create" the parent dirs recursively
         _is_file_type(dirpart, dedata, ENTRY_TYPE_DIR, data)
+
 
 def _is_file_type(entry, edata, etype, data):
     _is_present(entry, edata, data)
@@ -165,7 +129,7 @@ def _parse_contains_entry(data, cmd, last, arg):
         raise IOError("%s takes at least two and at most three arguments" % (
             cmd))
     edata = data[entry]
-    ftype, mode = _unix_perm(uperm)
+    ftype, mode = unix_perm(uperm)
     _is_file_type(entry, edata, ftype, data)
     _set_perm(entry, edata, mode, user, group)
     return entry
