@@ -6,7 +6,7 @@ This module manages the test workspace, and helps manage the tests.
 from dpu.templates import TemplateManager, JinjaTemplate
 from dpu.utils import (load_config, abspath, tmpdir,
                        mkdir, run_builder, run_checker,
-                       is_identical_with_diff, run_command)
+                       diff, run_command)
 import os
 
 
@@ -139,8 +139,8 @@ class Test(object):
                     # OK, let's verify
                     if os.path.exists(output):
                         with open("/dev/null", "w") as null:
-                            if is_identical_with_diff(pristine, output,
-                                                      output_fd=null):
+                            if diff(pristine, output,
+                                    output_fd=null):
                                 results[checker] = "passed"
                             else:
                                 results[checker] = "failed"

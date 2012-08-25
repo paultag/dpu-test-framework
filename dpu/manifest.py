@@ -38,6 +38,9 @@ def _unix_perm(p):
         ftype = ENTRY_TYPE_SYMLINK
     else:
         raise NotImplementedError("Cannot parse %s" % p)
+
+
+
     if p[1] == 'r': o |= 00400
     if p[2] == 'w': o |= 00200
     if p[3] == 'x': o |= 00200

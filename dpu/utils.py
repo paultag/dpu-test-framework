@@ -116,56 +116,12 @@ def run_checker(cmd):
     run_command(list(cmd))
 
 
-def is_identical_with_diff(from_file, to_file,
-                           from_data=None, to_data=None, output_fd=None):
-    """Make a unified diff between from_file and to_file
-
-    If from_data is given, the contents of from_file is assumed to be
-    from_data.
-
-    If to_data is given, the contents of to_file is assumed to be
-    to_data.
-
-    At most one of from_data and to_data may be given.
-
-    Returns True if the files are identical
-    """
-
-    # Implementation detail; we use diff -u rather than
-    # difflib.unified_diff because the former knows better than to
-    # vomit binary data to stdout and "I" am too lazy to re-implement
-    # the "is-binary" check.
-
-    from_label = from_file
-    to_label = to_file
-    data = None
-    pstdin = None
-    if from_data is not None and to_data is not None:
-        raise ValueError("At least one of from_data and to_data must be None")
-    if from_data is not None:
-        data = from_data
-        from_file = '-'
-        pstdin = subprocess.PIPE
-    elif to_data is not None:
-        data = to_data
-        to_file = '-'
-        pstdin = subprocess.PIPE
+def diff(from_file, to_file, output_fd=None):
     cmd = ['diff', '-u',
-           '--label=%s' % from_label,
+           '--label=%s' % from_file,
            from_file,
-           '--label=%s' % to_label,
+           '--label=%s' % to_file,
            to_file]
-
-    proc = subprocess.Popen(cmd, stdin=pstdin, stdout=output_fd)
-    if data is not None:
-        proc.stdin.write(data)
-        proc.stdin.close()
+    proc = subprocess.Popen(cmd, stdout=output_fd)
     ret = proc.wait()
-    if ret and ret != 1:
-        if ret > 0:
-            errmsg = "%s died with %d" % (" ".join(cmd), ret)
-        else:
-            errmsg = "%s was killed by signal %d" % (" ".join(cmd), abs(ret))
-        raise OSError(errmsg)
-
-    return not ret
+    return ret == 0
