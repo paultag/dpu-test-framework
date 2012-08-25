@@ -200,5 +200,4 @@ class TestSuite(object):
         """
         Get all the test to be handled
         """
-        for test in os.listdir(self._test_dir):
-            yield self.get_test(test)
+        return (self.get_test(t) for t in os.listdir(self._test_dir))
