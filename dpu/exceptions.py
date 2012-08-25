@@ -2,6 +2,14 @@
 # license.
 
 
+class InvalidTemplate(Exception):
+    def __init__(self, entry):
+        self.entry = entry
+
+    def __str__(self):
+        return "Invalid template: %s" % (self.entry)
+
+
 class ManifestCheckError(Exception):
     def __init__(self, entry, expected=None, actual=None):
         self.entry = entry
@@ -10,6 +18,22 @@ class ManifestCheckError(Exception):
 
     def __str__(self):
         raise NotImplementedError("Should have been overriden")
+
+
+class NoSuchCallableError(Exception):
+    def __init__(self, description):
+        self.description = description
+
+    def __str__(self):
+        return "Invalid Callable: %s" % (self.description)
+
+
+class InvalidManifestError(Exception):
+    def __init__(self, description):
+        self.description = description
+
+    def __str__(self):
+        return "Invalid Manifest: %s" % (self.description)
 
 
 class EntryPresentAssertionError(ManifestCheckError):

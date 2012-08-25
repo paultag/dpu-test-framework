@@ -4,6 +4,7 @@
 This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
+from dpu.exceptions import InvalidTemplate, NoSuchCallableError
 from dpu.utils import (load_config, abspath, tmpdir,
                        mkdir, run_builder, run_checker,
                        diff, run_command)
@@ -62,16 +63,15 @@ class Test(object):
         version = version['upstream']
 
         for template in ctx['templates']:
-            if template == "shim:upstream":  # XXX: Better handling here.
+            if template == "shim:upstream":
                 if native:
-                    raise KeyError("Native thinger calling upstream")
+                    raise InvalidTemplate("shim:upstream")
                 tm.add_template("UpstreamShim", pkgname, version)
                 tm.add_template("DebianShim")
             else:
                 tobj = self._template_search(template)
                 if tobj is None:
-                    raise KeyError("Can't find template %s" % (
-                        template))  # XXX: Not such a stupid exception here.
+                    raise InvalidTemplate(template)
                 tm.add_real_template(tobj)
         return tm
 
@@ -126,8 +126,8 @@ class Test(object):
                          self._context[thing])
                 for (name, tpath) in titer:
                     if tpath is None:
-                        raise Exception("No %s called %s available" % (
-                            thing, name))
+                        raise NoSuchCallableError("No %s called %s available"
+                                                  % (thing, name))
                     runner((tpath, path))
                 # OK, let's see what just went on.
             self._run_hook("post-build", path=path)

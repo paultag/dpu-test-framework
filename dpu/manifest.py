@@ -16,19 +16,19 @@ from dpu.utils import unix_perm
 def _split_usergroup(value):
     user, group, re = value.split(":", 2)
     if re:
-        raise IOError('Too many colons in "user:group" argument')
+        raise InvalidManifestError('Too many colons in "user:group" argument')
     if not group:
         # allow "/" as separator (because tar uses it in tar -vt)
         user, group, re = value.split("/", 2)
         if re:
-            raise IOError(
+            raise InvalidManifestError(
                 'user & group must be separated with ":" if they contain "/"')
     return (user, group)
 
 
 def _is_present(entry, edata, data, present=True):
     if "present" in edata and edata["present"] != present:
-        raise IOError("%s cannot be present and not-present at the same time" %
+        raise InvalidManifestError("%s cannot be present and not-present at the same time" %
                       (entry))
     edata["present"] = present
     if present:
@@ -46,13 +46,13 @@ def _is_file_type(entry, edata, etype, data):
     _is_present(entry, edata, data)
     if "entry-type" in edata:
         if edata["entry-type"] != etype:
-            raise IOError("%s cannot be a %s and a %s at the same time" %
+            raise InvalidManifestError("%s cannot be a %s and a %s at the same time" %
                           (entry, etype, edata["entry-type"]))
     else:
         edata["entry-type"] = etype
 
     if etype == ENTRY_TYPE_SYMLINK and "perm" in edata:
-        raise IOError(
+        raise InvalidManifestError(
             "%s is expected to be a symlink, but has perm information" % (
                 entry
             ))
@@ -68,12 +68,12 @@ def _parse_link_target(data, cmd, last, arg):
             if len(args) > 1:
                 entry = args[1]
     if target is None:
-        raise IOError("%s takes either one or two arguments" % (cmd))
+        raise InvalidManifestError("%s takes either one or two arguments" % (cmd))
 
     edata = data[entry]
     _is_file_type(entry, edata, ENTRY_TYPE_SYMLINK, data)
     if "link-target" in edata and edata["link-target"] != target:
-        raise IOError("%s cannot point to %s and %s at the same time" %
+        raise InvalidManifestError("%s cannot point to %s and %s at the same time" %
                       (entry, target, edata["link-target"]))
     edata["link-target"] = target
     return entry
@@ -81,7 +81,7 @@ def _parse_link_target(data, cmd, last, arg):
 
 def _parse_not_present(data, cmd, last, arg):
     if not arg or len(arg.split(None, 1)) != 1:
-        raise IOError("%s takes exactly one argument" % cmd)
+        raise InvalidManifestError("%s takes exactly one argument" % cmd)
     entry = arg
     edata = data[entry]
     _is_present(entry, edata, data, present=False)
@@ -91,7 +91,7 @@ def _parse_not_present(data, cmd, last, arg):
 def _parse_contains_X(data, cmd, last, arg):
     etype = cmd.replace("contains-", "", 1)
     if not arg or len(arg.split(None, 1)) != 1:
-        raise IOError("%s takes exactly one argument" % cmd)
+        raise InvalidManifestError("%s takes exactly one argument" % cmd)
     entry = arg
     edata = data[entry]
     _is_file_type(entry, edata, etype, data)
@@ -100,10 +100,10 @@ def _parse_contains_X(data, cmd, last, arg):
 
 def _set_perm(entry, edata, mode, user, group):
     if "entry-type" in edata and edata["entry-type"] == ENTRY_TYPE_SYMLINK:
-        raise IOError("%s cannot be applied to symlink entry" % entry)
+        raise InvalidManifestError("%s cannot be applied to symlink entry" % entry)
 
     if "perm" in edata and edata["perm"] != mode:
-        raise IOError("Conflicting perm mode for %s" % entry)
+        raise InvalidManifestError("Conflicting perm mode for %s" % entry)
     edata["perm"] = mode
 
     if user is not None:
@@ -126,7 +126,7 @@ def _parse_contains_entry(data, cmd, last, arg):
             if len(args) == 3:
                 user, group = _split_usergroup(args[1])
     if entry is None:
-        raise IOError("%s takes at least two and at most three arguments" % (
+        raise InvalidManifestError("%s takes at least two and at most three arguments" % (
             cmd))
     edata = data[entry]
     ftype, mode = unix_perm(uperm)
@@ -151,7 +151,7 @@ def _parse_perm(data, cmd, last, arg):
                 entry = args[2]
 
     if entry is None:
-        raise IOError("%s takes at least one and at most three arguments" % (
+        raise InvalidManifestError("%s takes at least one and at most three arguments" % (
             cmd))
 
     edata = data[entry]
@@ -187,7 +187,7 @@ def parse_manifest(fname):
                 continue
             spl = line.split(None, 1)
             if spl[0] not in COMMANDS:
-                raise IOError("Unknown command %s" % spl[0])
+                raise InvalidManifestError("Unknown command %s" % spl[0])
             if len(spl) == 1:
                 spl.append(None)
             last = COMMANDS[spl[0]](data, spl[0], last, spl[1])

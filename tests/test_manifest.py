@@ -151,6 +151,6 @@ def test_manifest_missing_file():
 def test_implicit_dir():
     try:
         check_manifest("manifests", "implicit-dirs")
-    except IOError as e:
-        assert str(e) == "usr cannot be a file and a dir at the same time"
+    except InvalidManifestError as e:
+        assert str(e) == "Invalid Manifest: usr cannot be a file and a dir at the same time"
 
