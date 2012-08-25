@@ -5,9 +5,16 @@ import os
 import tarfile
 
 from dpu.manifest import parse_manifest
-from dpu.exceptions import *
 from dpu.utils import tmpdir, rsync, mkdir, rm
 from dpu.tarball import open_compressed_tarball
+
+from .exceptions import (ManifestCheckError,
+                         InvalidManifestError,
+                         EntryPresentAssertionError,
+                         EntryNotPresentAssertionError,
+                         EntryWrongTypeAssertionError,
+                         SymlinkTargetAssertionError,
+                         EntryPermissionAssertionError)
 
 
 resources = "./tests/resources/"

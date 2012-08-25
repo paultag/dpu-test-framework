@@ -9,8 +9,13 @@ import os
 from functools import partial
 from collections import defaultdict
 
-from .exceptions import *
 from dpu.utils import unix_perm
+from .exceptions import (InvalidManifestError,
+                         SymlinkTargetAssertionError,
+                         EntryPermissionAssertionError,
+                         EntryPresentAssertionError,
+                         EntryNotPresentAssertionError,
+                         EntryWrongTypeAssertionError)
 
 
 def _split_usergroup(value):
