@@ -112,6 +112,7 @@ def run_command(cmd, output=False):
         if out is not None:
             out.close()
 
+
 def run_builder(cmd):
     run_command(list(cmd))
 
