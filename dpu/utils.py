@@ -88,6 +88,64 @@ def abspath(folder):
     return os.path.abspath(folder)
 
 
+def parse_perm(permission_string):
+    tbit = permission_string[0]
+    ftype = {
+        "d": "directory",
+        "-": "file",
+        "h": "file",
+        "l": "symlink"
+    }[tbit]
+
+    user = permission_string[1:4]
+    group = permission_string[4:7]
+    other = permission_string[7:10]
+
+    def _parse_bits(slug):
+        sticky = False
+        setugid = False
+        ret = 0
+        ret += 4 if slug[0] == 'r' else 0
+        ret += 2 if slug[1] == 'w' else 0
+        ret += 1 if slug[2] == 'x' else 0
+        sticky = True if slug[2] == "s" else False
+        setugid = True if slug[2] == "t" else False
+
+        if slug[2] == "S":
+            sticky = True
+            ret += 1
+
+        if slug[2] == "T":
+            setugid = True
+            ret += 1
+
+        return {
+            "ret": ret,
+            "sticky": sticky,
+            "setugid": setugid
+        }
+
+    user, group, other = (_parse_bits(user),
+                          _parse_bits(group),
+                          _parse_bits(other))
+
+    if other['setugid'] or user['sticky'] or group['sticky']:
+        raise OSException("Nonsense bits")
+
+    extra = 0
+    extra += 1 if other['sticky'] else 0
+    extra += 2 if group['setugid'] else 0
+    extra += 4 if user['setugid'] else 0
+
+    return (
+        ftype,
+        "".join([str(x) for x in
+                 extra,
+                 user['ret'],
+                 group['ret'],
+                 other['ret']])
+    )
+
 def rsync(source, target, excludes=None):
     cmd = ['rsync', '-arpc', source + "/", target + "/"]
     if excludes:
