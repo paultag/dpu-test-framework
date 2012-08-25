@@ -152,34 +152,34 @@ def unix_perm(p):
     o = 0
     if len(p) != 10:
         raise IOError("%s is not a valid permission" % p)
-    if p[0] == 'd':
-        ftype = ENTRY_TYPE_DIR
-    elif p[0] == '-' or p[0] == 'h':
-        ftype = ENTRY_TYPE_FILE
-    elif p[0] == 'l':
-        ftype = ENTRY_TYPE_SYMLINK
-    else:
+
+    try:
+        ftype = {
+            "d": ENTRY_TYPE_DIR,
+            "-": ENTRY_TYPE_FILE,
+            "h": ENTRY_TYPE_FILE,
+            "l": ENTRY_TYPE_SYMLINK
+        }[p[0]]
+    except KeyError:
         raise NotImplementedError("Cannot parse %s" % p)
 
+    o |= 00400 if p[1] == 'r' else 0
+    o |= 00200 if p[2] == 'w' else 0
+    o |= 00200 if p[3] == 'x' else 0
+    o |= 00100 if p[3] == 'x' else 0
+    o |= 04100 if p[3] == 's' else 0
+    o |= 04000 if p[3] == 'S' else 0
 
+    o |= 00040 if p[4] == 'r' else 0
+    o |= 00020 if p[5] == 'w' else 0
+    o |= 00010 if p[6] == 'x' else 0
+    o |= 02010 if p[6] == 's' else 0
+    o |= 02000 if p[6] == 'S' else 0
 
-    if p[1] == 'r': o |= 00400
-    if p[2] == 'w': o |= 00200
-    if p[3] == 'x': o |= 00200
-    if p[3] == 'x': o |= 00100
-    if p[3] == 's': o |= 04100
-    if p[3] == 'S': o |= 04000
-
-    if p[4] == 'r': o |= 00040
-    if p[5] == 'w': o |= 00020
-    if p[6] == 'x': o |= 00010
-    if p[6] == 's': o |= 02010
-    if p[6] == 'S': o |= 02000
-
-    if p[7] == 'r': o |= 00004
-    if p[8] == 'w': o |= 00002
-    if p[9] == 'x': o |= 00001
-    if p[9] == 't': o |= 01001
-    if p[9] == 'T': o |= 01000
+    o |= 00004 if p[7] == 'r' else 0
+    o |= 00002 if p[8] == 'w' else 0
+    o |= 00001 if p[9] == 'x' else 0
+    o |= 01001 if p[9] == 't' else 0
+    o |= 01000 if p[9] == 'T' else 0
 
     return (ftype, o)
