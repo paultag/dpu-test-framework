@@ -109,15 +109,11 @@ def run_command(cmd, output=False):
             out.close()
 
 def run_builder(cmd):
-    binary, path = cmd
-    cmd = [binary, path]
-    run_command(cmd)
+    run_command(list(cmd))
 
 
 def run_checker(cmd):
-    binary, path = cmd
-    cmd = [binary, path]
-    run_command(cmd)
+    run_command(list(cmd))
 
 
 def is_identical_with_diff(from_file, to_file,
