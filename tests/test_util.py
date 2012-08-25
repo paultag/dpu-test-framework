@@ -7,8 +7,7 @@ This module tests some basics in the utils class.
 import os
 
 from dpu.utils import (dir_walk, mkdir, tmpdir, cd,
-                       diff, diff_against_string,
-                       parse_perm)
+                       diff, diff_against_string)
 
 resources = "./tests/resources/"
 
@@ -125,14 +124,3 @@ baz
         cp1 = open(f, "r").read()
         cp2 = open("tests/resources/util-diff/diff", "r").read()
         assert cp1 == cp2
-
-
-def test_unix_perm():
-    tests = {
-        "-rw-r--r--": ("file", "0644")
-    }
-    for test in tests:
-        typ1, mask1 = tests[test]
-        typ2, mask2 = parse_perm(test)
-        assert typ1 == typ2
-        assert mask1 == mask2
