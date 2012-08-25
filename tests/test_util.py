@@ -7,7 +7,7 @@ This module tests some basics in the utils class.
 import os
 
 from dpu.utils import (dir_walk, mkdir, tmpdir, cd,
-                       diff)
+                       diff, diff_against_string)
 
 resources = "./tests/resources/"
 
@@ -94,6 +94,31 @@ def test_file_diff_output():
         assert not diff("tests/resources/util-diff/newf",
                         "tests/resources/util-diff/orig",
                         output_fd=fd)
+        fd.close()
+
+        cp1 = open(f, "r").read()
+        cp2 = open("tests/resources/util-diff/diff", "r").read()
+        assert cp1 == cp2
+
+
+def test_string_diff_ret():
+    null = open("/dev/null", "w")
+    assert not diff_against_string("tests/resources/util-diff/newf",
+                                   "tests/resources/util-diff/orig",
+                                   output_fd=null)
+
+
+def test_file_diff_output():
+    cmp1 = """foo
+bar
+baz
+"""
+    with tmpdir() as tmp:
+        f = "%s/%s" % (tmp, "diff.str")
+        fd = open(f, "w")
+        assert not diff_against_string("tests/resources/util-diff/newf",
+                                       cmp1,
+                                       output_fd=fd)
         fd.close()
 
         cp1 = open(f, "r").read()

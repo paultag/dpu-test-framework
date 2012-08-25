@@ -125,3 +125,19 @@ def diff(from_file, to_file, output_fd=None):
     proc = subprocess.Popen(cmd, stdout=output_fd)
     ret = proc.wait()
     return ret == 0
+
+
+def diff_against_string(from_file, to_string, output_fd=None):
+    cmd = ['diff', '-u',
+           '--label=%s' % from_file,
+           from_file,
+           '--label=%s' % "-",
+           "-"]
+    proc = subprocess.Popen(cmd,
+                            stdin=subprocess.PIPE,
+                            stdout=output_fd)
+    if to_string is not None:
+        proc.stdin.write(to_string)
+        proc.stdin.close()
+    ret = proc.wait()
+    return ret == 0
