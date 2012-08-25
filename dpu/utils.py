@@ -96,14 +96,17 @@ def rsync(source, target, excludes=None):
 
 
 def run_command(cmd, output=False):
-    out = open("/dev/null", "w")
-    if output:
-        out = None
-    subprocess.check_call(cmd,
-                          shell=False,
-                          stderr=out,
-                          stdout=out)
-
+    out = None
+    if not output:
+        out = open("/dev/null", "w")
+    try:
+        subprocess.check_call(cmd,
+                              shell=False,
+                              stderr=out,
+                              stdout=out)
+    finally:
+        if out is not None:
+            out.close()
 
 def run_builder(cmd):
     binary, path = cmd
