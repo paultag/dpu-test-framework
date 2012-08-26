@@ -46,9 +46,9 @@ class TestJob(threading.Thread):
 
     def run(self):
         for test in self.iterator:
-            sys.stdout.write("[1;30m")
-            print "%s: Running test -- %s" % (self.name, test.name)
-            sys.stdout.write("[0m")
+            #sys.stdout.write("[1;30m")
+            #print "%s: Running test -- %s" % (self.name, test.name)
+            #sys.stdout.write("[0m")
             val = test.run()
             stat = [val[x] for x in val]
             if len(stat) == 0:
