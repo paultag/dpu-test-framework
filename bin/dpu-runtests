@@ -58,7 +58,7 @@ class TestJob(threading.Thread):
                 had_failure = True
             else:
                 sys.stdout.write("[1;32m")
-            print "%s: Ran test     -- %s (%s)" % (self.name, test.name, stat)
+            print "Ran test     -- %s (%s)" % (test.name, stat)
             sys.stdout.write("[0m")
 
 
