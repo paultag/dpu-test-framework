@@ -68,9 +68,6 @@ class Test(object):
                     raise InvalidTemplate("shim:upstream")
                 tm.add_template("UpstreamShim", pkgname, version)
                 tm.add_template("DebianShim")
-                if "generic" in ctx['templates']:  # Hax.
-                    tobj = self._template_search("generic-non-native")
-                    tm.add_real_template(tobj)
             else:
                 tobj = self._template_search(template)
                 tm.add_real_template(tobj)

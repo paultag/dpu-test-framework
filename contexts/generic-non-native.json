@@ -1,0 +1,12 @@
+{
+    "format": {
+        "variant": "quilt",
+        "version": "3.0"
+    },
+    "native": false,
+    "version": {
+        "debian": "1",
+        "epoch": null,
+        "upstream": "1.0"
+    }
+}
