@@ -137,7 +137,6 @@ class Test(object):
         source, version = self.get_source_and_version()
         version = version['upstream']
         tm = self.get_template_stack()
-        self._workspace
         with tmpdir() as tmp:
             self.path = "%s/%s-%s" % (tmp, source, version)
             path = self.path
