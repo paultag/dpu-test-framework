@@ -70,8 +70,6 @@ class Test(object):
                 tm.add_template("DebianShim")
             else:
                 tobj = self._template_search(template)
-                if tobj is None:
-                    raise InvalidTemplate(template)
                 tm.add_real_template(tobj)
         return tm
 
