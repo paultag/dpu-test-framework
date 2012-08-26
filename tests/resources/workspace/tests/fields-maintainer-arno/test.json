@@ -1,0 +1,17 @@
+{
+    "builders": [
+        "source"
+    ],
+    "checkers": [
+        "lintian"
+    ],
+    "description": "Make sure Arno's not the Maintainer",
+    "maintainer": "Arno Toell <arno@debian.org>",
+    "native": false,
+    "templates": [
+        "hello",
+        "shim:upstream",
+        "generic"
+    ],
+    "testname": "fields-maintainer-arno"
+}
