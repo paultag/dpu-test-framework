@@ -6,6 +6,7 @@ import sys
 import time
 import thread
 import threading
+import datetime as dt
 import multiprocessing
 
 from dpu.suite import TestSuite
@@ -35,6 +36,7 @@ tests = LockedIterator(ws.tests())
 cpu_count = multiprocessing.cpu_count()
 
 had_failure = False
+test_count = 0
 
 t_count = (cpu_count * 2)
 threads = []
@@ -46,22 +48,21 @@ class TestJob(threading.Thread):
 
     def run(self):
         global had_failure
+        global test_count
         for test in self.iterator:
-            #sys.stdout.write("[1;30m")
-            #print "%s: Running test -- %s" % (self.name, test.name)
-            #sys.stdout.write("[0m")
+            test_count += 1
             val = test.run()
             stat = [val[x] for x in val]
             if len(stat) == 0:
-                sys.stdout.write("[1;33m")
+                sys.stdout.write(",")
             elif "failed" in stat:
-                sys.stdout.write("[1;31m")
                 had_failure = True
+                sys.stdout.write("F")
             else:
-                sys.stdout.write("[1;32m")
-            print "Ran test     -- %s (%s)" % (test.name, stat)
-            sys.stdout.write("[0m")
+                sys.stdout.write(".")
+            sys.stdout.flush()
 
+started = dt.datetime.now()
 
 for guy in range(0, t_count):
     t = TestJob(tests)
@@ -73,6 +74,14 @@ for t in threads:
 
 for t in threads:
     t.join()
+
+ended = dt.datetime.now()
+
+print ""
+print "Ran %s tests in %s seconds" % (
+    test_count,
+    (ended - started).total_seconds()
+)
 
 if had_failure:
     sys.exit(1)
