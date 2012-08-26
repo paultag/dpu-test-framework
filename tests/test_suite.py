@@ -75,6 +75,20 @@ def test_run_all_the_things():
         assert os.path.exists("%s/pre-build" % (tmp))
 
 
+def test_todo():
+    ws = TestSuite(workspace)
+    test = ws.get_test("todo-test")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
+    tm = test.get_template_stack()
+    with tmpdir() as tmp:
+        path = "%s/%s-%s" % (tmp, source, version)
+        mkdir(path)
+        tm.render(path)
+        ret = test.run()
+        assert ret == {}
+
+
 def test_render_nested():
     ws = TestSuite(workspace)
     test = ws.get_test("nested-thing")

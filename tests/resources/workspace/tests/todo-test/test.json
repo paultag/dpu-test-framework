@@ -1,0 +1,19 @@
+{
+    "builders": [
+        "source"
+    ],
+    "checkers": [
+        "lintian-pedantic"
+    ],
+    "description": "Test an empty Debian diff",
+    "foo": "baz",
+    "format": {
+        "version": "1.0"
+    },
+    "native": true,
+    "templates": [
+        "generic"
+    ],
+    "testname": "todo-test",
+    "todo": "plonk"
+}
