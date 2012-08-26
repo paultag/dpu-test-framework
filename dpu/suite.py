@@ -105,6 +105,7 @@ class Test(object):
                         output=True)
 
     def _run_checks(self):
+        # XXX: TODO: If check is a list, put together a pipeline.
         checks = self._context['checkers']
         for check in checks:
             path = self._workspace._look_up('checkers', check)
