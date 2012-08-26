@@ -2,3 +2,4 @@ bin/*                       usr/bin/
 templates/*                 usr/share/dpu/templates/
 builders/*                  usr/share/dpu/builders/
 checkers/*                  usr/share/dpu/checkers/
+contexts/*                  usr/share/dpu/checkers/

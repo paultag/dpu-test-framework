@@ -116,6 +116,16 @@ class Test(object):
             run_builder(path, self.path)
 
     def run(self):
+        templates = self._context['templates'][:]
+        templates.reverse()
+
+        for template in templates:
+            try:
+                context = self._workspace._look_up('contexts', template)
+                self.set_global_context(context)
+            except NoSuchCallableError:
+                pass
+
         self._run_hook("init")
 
         if "todo" in self._context:
@@ -169,6 +179,7 @@ class TestSuite(object):
         self._workspace_path = abspath(workspace)
         self._test_dir = "%s/tests" % (workspace)
         self._context = load_config("%s/context.json" % (workspace))
+        self._workspace = workspace
 
     def get_template(self, name):
         """
