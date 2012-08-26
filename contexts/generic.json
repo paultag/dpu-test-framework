@@ -17,6 +17,7 @@
     },
     "homepage": "http://debian.org",
     "maintainer": "John Q. Hacker <jhacker@example.com>",
+    "native": true,
     "priority": "optional",
     "section": "devel",
     "source": "pkgfoo",
@@ -25,7 +26,7 @@
     "synopsis": "kruft!",
     "urgency": "low",
     "version": {
-        "debian": "1",
+        "debian": null,
         "epoch": null,
         "upstream": "1.0"
     }
