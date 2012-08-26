@@ -64,6 +64,19 @@ def test_run_all_the_things():
         tm.render(path)
 
 
+def test_render_nested():
+    ws = TestSuite(workspace)
+    test = ws.get_test("nested-thing")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
+    tm = test.get_template_stack()
+    with tmpdir() as tmp:
+        path = "%s/%s-%s" % (tmp, source, version)
+        mkdir(path)
+        tm.render(path)
+        assert os.path.exists("%s/kruft" % (path))
+
+
 def test_upstream_shim():
     ws = TestSuite(workspace)
     test = ws.get_test("native-calls-upstream-shim")
