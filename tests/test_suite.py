@@ -135,6 +135,13 @@ def test_run_tests():
     test.run()
 
 
+def test_failure():
+    ws = TestSuite(workspace)
+    test = ws.get_test('fields-maintainer-arno')
+    results = test.run()
+    assert "failed" in [results[x] for x in results]
+
+
 def test_templater():
     """
     Make sure we can render out templates correctly

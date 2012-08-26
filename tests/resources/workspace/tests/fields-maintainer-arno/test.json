@@ -6,6 +6,7 @@
         "lintian"
     ],
     "description": "Make sure Arno's not the Maintainer",
+    "foo": "kruft",
     "maintainer": "Arno Toell <arno@debian.org>",
     "native": false,
     "templates": [
