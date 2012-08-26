@@ -64,6 +64,17 @@ def test_run_all_the_things():
         tm.render(path)
 
 
+def test_run_all_the_things():
+    """
+    Test all the thingers.
+    """
+    ws = TestSuite(workspace)
+    test = ws.get_test("hook-basics")
+    with tmpdir() as tmp:
+        test._run_hook("pre-build", tmp)
+        assert os.path.exists("%s/pre-build" % (tmp))
+
+
 def test_render_nested():
     ws = TestSuite(workspace)
     test = ws.get_test("nested-thing")
