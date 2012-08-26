@@ -120,10 +120,13 @@ class Test(object):
         templates.reverse()
 
         for template in templates:
+            template = "%s.json" % (template)
+
             try:
                 context = self._workspace._look_up('contexts', template)
+                context = load_config(context)
                 self.set_global_context(context)
-            except NoSuchCallableError:
+            except NoSuchCallableError as e:
                 pass
 
         self._run_hook("init")
