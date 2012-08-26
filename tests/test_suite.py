@@ -64,7 +64,7 @@ def test_run_all_the_things():
         tm.render(path)
 
 
-def test_run_all_the_things():
+def test_hooks():
     """
     Test all the thingers.
     """
@@ -108,7 +108,7 @@ def test_upstream_shim():
     source, version = test.get_source_and_version()
     version = version['upstream']
     try:
-        tm = test.get_template_stack()
+        test.get_template_stack()
     except InvalidTemplate:
         return
     assert True is False
@@ -120,7 +120,7 @@ def test_invalid_template():
     source, version = test.get_source_and_version()
     version = version['upstream']
     try:
-        tm = test.get_template_stack()
+        test.get_template_stack()
     except InvalidTemplate:
         return
     assert True is False

@@ -115,7 +115,6 @@ class Test(object):
             path = self._workspace._look_up('builders', build)
             run_builder(path, self.path)
 
-
     def run(self):
         self._run_hook("init")
 
@@ -125,7 +124,7 @@ class Test(object):
         source, version = self.get_source_and_version()
         version = version['upstream']
         tm = self.get_template_stack()
-        suite = self._workspace
+        self._workspace
         with tmpdir() as tmp:
             self.path = "%s/%s-%s" % (tmp, source, version)
             path = self.path
