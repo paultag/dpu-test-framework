@@ -177,11 +177,11 @@ class TestSuite(object):
         """
         Get a workspace global template by the name of `name`.
         """
-        # XXX: throw together some logic here
+        try:
+            path = self._look_up("templates", name)
+        except NoSuchCallableError:
+            raise InvalidTemplate("No such template: %s" % (name))
 
-        path = self._look_up("templates", name)
-        if path is None:
-            return None
         return JinjaTemplate(path)
 
     def _look_up(self, thing, name):

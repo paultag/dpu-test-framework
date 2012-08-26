@@ -69,12 +69,22 @@ def test_upstream_shim():
     test = ws.get_test("native-calls-upstream-shim")
     source, version = test.get_source_and_version()
     version = version['upstream']
-
     try:
         tm = test.get_template_stack()
     except InvalidTemplate:
         return
+    assert True is False
 
+
+def test_invalid_template():
+    ws = TestSuite(workspace)
+    test = ws.get_test("invalid-template-call")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
+    try:
+        tm = test.get_template_stack()
+    except InvalidTemplate:
+        return
     assert True is False
 
 

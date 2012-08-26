@@ -1,0 +1,19 @@
+{
+    "builders": [
+        "source"
+    ],
+    "checkers": [
+        "lintian-pedantic"
+    ],
+    "description": "Test an empty Debian diff",
+    "foo": "baz",
+    "format": {
+        "version": "1.0"
+    },
+    "native": true,
+    "templates": [
+        "generic",
+        "krufty kruft"
+    ],
+    "testname": "invalid-template-call"
+}
