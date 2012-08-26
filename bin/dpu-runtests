@@ -45,6 +45,7 @@ class TestJob(threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        global had_failure
         for test in self.iterator:
             #sys.stdout.write("[1;30m")
             #print "%s: Running test -- %s" % (self.name, test.name)
