@@ -30,7 +30,11 @@ def test_crazy_things():
     test = ws.get_test("cruft-empty-diff")
     assert test._template_search("hello") is not None
     assert test._template_search("generic") is not None
-    assert test._template_search("hello-brainfuck") is None
+    try:
+        test._template_search("hello-brainfuck")
+        assert False is True
+    except Exception:
+        pass
 
 
 def test_test_context():

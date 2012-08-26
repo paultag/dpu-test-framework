@@ -113,12 +113,12 @@ def run_command(cmd, output=False):
             out.close()
 
 
-def run_builder(cmd):
-    run_command(list(cmd))
+def run_builder(*args):
+    run_command(args)
 
 
-def run_checker(cmd):
-    run_command(list(cmd))
+def run_checker(*args):
+    run_command(args)
 
 
 def diff(from_file, to_file, output_fd=None):

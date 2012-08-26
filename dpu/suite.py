@@ -104,6 +104,19 @@ class Test(object):
             run_command([bin_path, path],
                         output=True)
 
+    def _run_checks(self):
+        checks = self._context['checkers']
+        for check in checks:
+            path = self._workspace._look_up('checkers', check)
+            run_checker(path, self.path)
+
+    def _run_builds(self):
+        builds = self._context['builders']
+        for build in builds:
+            path = self._workspace._look_up('builders', build)
+            run_builder(path, self.path)
+
+
     def run(self):
         self._run_hook("init")
 
@@ -115,22 +128,20 @@ class Test(object):
         tm = self.get_template_stack()
         suite = self._workspace
         with tmpdir() as tmp:
-            path = "%s/%s-%s" % (tmp, source, version)
+            self.path = "%s/%s-%s" % (tmp, source, version)
+            path = self.path
             mkdir(path)
             self._run_hook("tmpdir", path=tmp)
             tm.render(path)
+
             self._run_hook("pre-build", path=path)
-            for (thing, runner) in [("builders", run_builder),
-                                    ("checkers", run_checker)]:
-                titer = ((x, suite._look_up(thing, x)) for x in
-                         self._context[thing])
-                for (name, tpath) in titer:
-                    if tpath is None:
-                        raise NoSuchCallableError("No %s called %s available"
-                                                  % (thing, name))
-                    runner((tpath, path))
-                # OK, let's see what just went on.
+            self._run_builds()
             self._run_hook("post-build", path=path)
+
+            self._run_hook("pre-check", path=path)
+            self._run_checks()
+            self._run_hook("post-check", path=path)
+
             results = {}
             for checker in self._context['checkers']:
                 pristine = "%s/%s" % (self._test_path, checker)
@@ -185,7 +196,8 @@ class TestSuite(object):
             path = os.path.join(base, thing, name)
             if os.path.exists(path):
                 return path
-        return None
+        raise NoSuchCallableError("No %s called %s available"
+                                  % (thing, name))
 
     def get_test(self, test):
         """
