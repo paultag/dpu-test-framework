@@ -11,9 +11,9 @@ import subprocess
 from itertools import starmap, chain
 from contextlib import contextmanager
 
-from dpu.manifest import (ENTRY_TYPE_FILE,
-                          ENTRY_TYPE_DIR,
-                          ENTRY_TYPE_SYMLINK)
+from dpu import (ENTRY_TYPE_DIR,
+                 ENTRY_TYPE_FILE,
+                 ENTRY_TYPE_SYMLINK)
 
 flattern = chain.from_iterable
 

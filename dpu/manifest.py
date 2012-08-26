@@ -1,13 +1,14 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
-ENTRY_TYPE_DIR = "dir"
-ENTRY_TYPE_FILE = "file"
-ENTRY_TYPE_SYMLINK = "symlink"
-
 import os
 from functools import partial
 from collections import defaultdict
+
+
+from dpu import (ENTRY_TYPE_DIR,
+                 ENTRY_TYPE_FILE,
+                 ENTRY_TYPE_SYMLINK)
 
 from dpu.utils import unix_perm
 from .exceptions import (InvalidManifestError,
