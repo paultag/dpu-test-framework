@@ -10,11 +10,11 @@
     "format": {
         "version": "1.0"
     },
-    "native": false,
+    "native": true,
     "templates": [
         "generic",
         "shim:upstream",
         "generic"
     ],
-    "testname": "cruft-empty-diff"
+    "testname": "naitive-calls-upstream-shim"
 }

@@ -6,6 +6,7 @@ This module tests the workspace system
 
 from dpu.suite import TestSuite
 from dpu.utils import abspath, tmpdir, mkdir
+from dpu.exceptions import InvalidTemplate
 import os
 
 workspace = abspath("./tests/resources/workspace")
@@ -52,15 +53,29 @@ def test_run_all_the_things():
     Test all the thingers.
     """
     ws = TestSuite(workspace)
-    for test in ws.tests():
-        source, version = test.get_source_and_version()
-        version = version['upstream']
+    test = ws.get_test("cruft-empty-diff")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
 
+    tm = test.get_template_stack()
+    with tmpdir() as tmp:
+        path = "%s/%s-%s" % (tmp, source, version)
+        mkdir(path)
+        tm.render(path)
+
+
+def test_upstream_shim():
+    ws = TestSuite(workspace)
+    test = ws.get_test("native-calls-upstream-shim")
+    source, version = test.get_source_and_version()
+    version = version['upstream']
+
+    try:
         tm = test.get_template_stack()
-        with tmpdir() as tmp:
-            path = "%s/%s-%s" % (tmp, source, version)
-            mkdir(path)
-            tm.render(path)
+    except InvalidTemplate:
+        return
+
+    assert True is False
 
 
 def test_run_tests():
@@ -68,8 +83,8 @@ def test_run_tests():
     Test all the thingers.
     """
     ws = TestSuite(workspace)
-    for test in ws.tests():
-        test.run()
+    test = ws.get_test('cruft-empty-diff')
+    test.run()
 
 
 def test_templater():
