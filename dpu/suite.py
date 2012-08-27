@@ -183,6 +183,7 @@ class TestSuite(object):
         self._test_dir = "%s/tests" % (workspace)
         self._context = load_config("%s/context.json" % (workspace))
         self._workspace = workspace
+        self.name = self._context['suite-name']
 
     def get_template(self, name):
         """

@@ -5,6 +5,7 @@
 import sys
 import time
 import thread
+import argparse
 import threading
 import datetime as dt
 import multiprocessing
@@ -12,6 +13,30 @@ import multiprocessing
 from dpu.suite import TestSuite
 from dpu.utils import mkdir, tmpdir
 
+cpu_count = multiprocessing.cpu_count()
+t_count = (cpu_count * 2)
+
+parser = argparse.ArgumentParser(
+    description='Debian Package Unit Testing Framework'
+)
+
+parser.add_argument(
+    '-j',
+    type=int,
+    default=t_count,
+    help='How many threads to use'
+)
+
+parser.add_argument(
+    'suite',
+    nargs="?",
+    default=".",
+    help='Path'
+)
+
+args = parser.parse_args()
+t_count = args.j
+tsdir = args.suite
 
 class LockedIterator(object):
     def __init__(self, it):
@@ -28,17 +53,14 @@ class LockedIterator(object):
         finally:
             self.lock.release()
 
-tsdir = "."
-if len(sys.argv) > 1:
-    tsdir = sys.argv[1]
 ws = TestSuite(tsdir)
 tests = LockedIterator(ws.tests())
-cpu_count = multiprocessing.cpu_count()
+
+print "Running %s's tests" % (ws.name)
 
 had_failure = False
 test_count = 0
 
-t_count = (cpu_count * 2)
 threads = []
 
 class TestJob(threading.Thread):
