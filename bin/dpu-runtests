@@ -35,6 +35,14 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '-t',
+    type=str,
+    nargs="*",
+    default=[],
+    help='Which tests to run'
+)
+
+parser.add_argument(
     'suite',
     default=".",
     nargs="?",
@@ -63,7 +71,12 @@ class LockedIterator(object):
             self.lock.release()
 
 ws = TestSuite(tsdir)
-tests = LockedIterator(ws.tests())
+tests = ws.tests()
+
+if len(args.t) != 0:
+    tests = (ws.get_test(x) for x in args.t)
+
+tests = LockedIterator(tests)
 
 print "Running %s's tests" % (ws.name)
 
