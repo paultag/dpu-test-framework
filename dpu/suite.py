@@ -115,7 +115,7 @@ class Test(object):
             path = self._workspace._look_up('builders', build)
             run_builder(path, self.path)
 
-    def run(self):
+    def run(self, verbose=False):
         templates = self._context['templates'][:]
         templates.reverse()
 
@@ -165,7 +165,14 @@ class Test(object):
                                 results[checker] = "passed"
                             else:
                                 results[checker] = "failed"
-                                diff(pristine, output)
+                                if verbose:
+                                    print "================================"
+                                    print "Checker match failure:"
+                                    print "  -> %s" % (self.name)
+                                    print "  -> %s" % (checker)
+                                    print "--------------------------------"
+                                    diff(pristine, output)
+                                    print "================================"
                     else:
                         results[checker] = "no-output"
                 else:

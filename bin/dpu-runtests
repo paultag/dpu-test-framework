@@ -28,13 +28,22 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    '-s',
+    action='store_const',
+    const=True,
+    default=False
+)
+
+parser.add_argument(
     'suite',
-    nargs="?",
     default=".",
+    nargs="?",
     help='Path'
 )
 
 args = parser.parse_args()
+
+verbose = args.s
 t_count = args.j
 tsdir = args.suite
 
@@ -60,7 +69,6 @@ print "Running %s's tests" % (ws.name)
 
 had_failure = False
 test_count = 0
-
 threads = []
 
 class TestJob(threading.Thread):
@@ -71,9 +79,14 @@ class TestJob(threading.Thread):
     def run(self):
         global had_failure
         global test_count
+        global verbose
         for test in self.iterator:
             test_count += 1
-            val = test.run()
+            kwargs = {}
+            if verbose:
+                kwargs['verbose'] = True
+
+            val = test.run(**kwargs)
             stat = [val[x] for x in val]
             if len(stat) == 0:
                 sys.stdout.write(",")
