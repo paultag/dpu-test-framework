@@ -2,6 +2,7 @@
 # Copyright (c) DPU AUTHORS, under the terms and conditions of the GPL-2+
 # license.
 
+import os
 import sys
 import time
 import thread
@@ -54,6 +55,7 @@ args = parser.parse_args()
 verbose = args.s
 t_count = args.j
 tsdir = args.suite
+os.umask(0022)
 
 class LockedIterator(object):
     def __init__(self, it):
