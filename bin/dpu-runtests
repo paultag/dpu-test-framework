@@ -114,7 +114,7 @@ class TestJob(threading.Thread):
 
 started = dt.datetime.now()
 
-for guy in range(0, t_count):
+for _ in range(0, t_count):
     t = TestJob(tests)
     threads.append(t)
 

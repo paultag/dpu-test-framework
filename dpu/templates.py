@@ -171,5 +171,5 @@ class TemplateManager(object):
         """
         Render out the queue to the directory `dest`.
         """
-        for guy in self._chain:
-            guy.render(dest)
+        for element in self._chain:
+            element.render(dest)
