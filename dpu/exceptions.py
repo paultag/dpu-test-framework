@@ -9,6 +9,14 @@ class InvalidTemplate(Exception):
     def __str__(self):
         return "Invalid template: %s" % (self.entry)
 
+class InvalidContextFile(Exception):
+    def __init__(self, context_file, error):
+        self.context_file = context_file
+        self.error = error
+
+    def __str__(self):
+        return "Invalid context file (%s): %s" % (
+            self.context_file, self.error)
 
 class ManifestCheckError(Exception):
     def __init__(self, entry, expected=None, actual=None):

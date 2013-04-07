@@ -4,7 +4,8 @@
 This module manages the test workspace, and helps manage the tests.
 """
 from dpu.templates import TemplateManager, JinjaTemplate
-from dpu.exceptions import InvalidTemplate, NoSuchCallableError
+from dpu.exceptions import (InvalidTemplate, NoSuchCallableError,
+                            InvalidContextFile)
 from dpu.utils import (load_config, abspath, tmpdir,
                        mkdir, run_builder, run_checker,
                        diff, run_command)
@@ -188,9 +189,14 @@ class TestSuite(object):
         """
         self._workspace_path = abspath(workspace)
         self._test_dir = "%s/tests" % (workspace)
-        self._context = load_config("%s/context.json" % (workspace))
+        context_file = os.path.join(workspace, "context.json")
+        self._context = load_config(context_file)
         self._workspace = workspace
-        self.name = self._context['suite-name']
+        try:
+            self.name = self._context['suite-name']
+        except KeyError:
+            raise InvalidContextFile(context_file, "Missing suite-name")
+
 
     def get_template(self, name):
         """
