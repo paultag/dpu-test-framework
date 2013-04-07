@@ -1,4 +1,5 @@
 {
+    "suite-name": "DPU variant of Lintian's testsuite",
     "bar": "bar",
     "binaries": [
         {
